@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* the speceificity of this is 1 */
+        h1 {
+            color: blue /*!important*/;
+        }
+        /* The specificity of this is 1+10  */
+        h1.yellow {
+            color: rgb(212, 212, 127);
+        }
+        .cred {
+            color: red;
+        }   
+        .cpurple {
+            color: purple;
+        }
+        /* The specificity of this atribute is 10 */
+        [x="a"] {
+            color: green;
+        }
+        /* The specificity of this is 1+10+10+10+10=41 */
+        a.ashikclass.game[href]:hover {
+            color: orange;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1 /*style="color: blueviolet;"*/ class="yellow cred cpurple" data x="a">css class specificity</h1>
+    </div>
+    
+</body>
+</html>
