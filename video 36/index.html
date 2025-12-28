@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Css multicolor website</title>
+    <style>
+        :root{
+            --primary-color: #9e1469;
+            --text-color: #ffffff;
+            --secondary-color: #cc90c8;
+        }
+
+        body{
+            background-color: var(--secondary-color);
+        }
+
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+        }
+        nav{
+            background-color: var(--primary-color); 
+            padding: 12px 0;
+        }
+        ul li{
+            display: inline;
+            list-style: none;
+            padding: 23px;
+            font-weight: bold;
+            color: var(--text-color);
+            font-family: 'Roboto Mono', monospace;
+        }
+        ul li a{
+            text-decoration: none;
+            color: var(--text-color);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">home</a></li>
+                <li><a href="/">about</a></li>
+                <li><a href="/">services</a></li>
+                <li><a href="/">contact</a></li>
+            </ul>
+        </nav>
+    </header>
+</body>
+</html>
