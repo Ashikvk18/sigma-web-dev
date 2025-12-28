@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>css card design</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+
+        body {
+            background-color: gray;
+        }
+
+        .card {
+            background-color: white;
+            width: 300px;
+            height: 500px;
+            border-radius: 7px;
+        }
+
+        .content h1 {
+            padding: 0;
+            font-size: 25px;
+            margin: 0;
+        }
+
+        .image {
+            padding: 10px;
+            text-align: center;
+            width: 1rem;
+        }
+
+        .image img {
+            width: 280px;
+            border-radius: 7px 7px 0 0;
+        }
+
+        .capsules {
+            padding: 10px;
+        }
+
+        .capsules span {
+            border: 1.5px solid black;
+            padding: 5px;
+            margin : 2px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: small;
+            margin: 5px;
+
+        }
+
+        .content {
+            padding: 3px;
+            font-family: "Roboto", sans-serif;
+            font-size: 14px;
+        }
+        .button{
+            text-align: center;
+            margin-top: 20px;
+        }
+        .button button{
+            padding: 10px;
+            background-color: lightblue;
+            color: blue;
+            border-radius: 15px;
+            
+        }
+        .button button:hover{
+            background-color: rgb(116, 190, 203);
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="image">
+            <img width=" 188"
+                src="https://img.veenaworld.com/wp-content/uploads/2023/01/shutterstock_2044050407-scaled.jpg" alt=""
+                class="src">
+        </div>
+        <div class="capsules">
+            <span>nature</span>
+            <span>travel</span>
+        </div>
+
+        <div class="content">
+            <h1>
+                Ashik
+            </h1>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed amet voluptatum vero ipsa nihil expedita
+                quidem consectetur, pariatur nulla officia in laudantium rem obcaecati!</p>
+        </div>
+        
+        <div class="button">
+            <button>submit</button>
+        </div>
+
+    </div>
+</body>
+
+</html>
