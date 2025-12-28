@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Css variables</title>
     <style>
+        :root{
+            --main-color: aqua;
+            --secondary-color: beige;
+        }
         *{
             margin: 0;
             padding: 0;
@@ -17,11 +21,15 @@
             padding: 20px;
             margin: 10px;
         }
+        ul li:first-child{
+            --main-color: coral;
+            background-color: var(--main-color, pink);
+        }
         .nav{
-            background-color: aqua;
+            background-color: var(--main-color);
         }
         .container{
-            background-color: beige;
+            background-color: var(--secondary-color);
         }
     </style>
 </head>
