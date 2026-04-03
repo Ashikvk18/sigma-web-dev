@@ -9,3 +9,6 @@ for(let i = 0; i < 5; i++) {
 if (x > 0) {
     console.log("x is positive");
 }
+else {
+    console.log("x is negative");
+}
