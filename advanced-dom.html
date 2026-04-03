@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced DOM Manipulation</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .section {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background 0.3s;
+            font-size: 14px;
+        }
+        
+        .btn:hover {
+            background: #5a6fd8;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-success {
+            background: #28a745;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            align-items: center;
+        }
+        
+        input[type="text"], input[type="number"], select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            flex: 1;
+        }
+        
+        .todo-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #28a745;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .todo-item.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+            border-left-color: #6c757d;
+        }
+        
+        .todo-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+            position: relative;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+        }
+        
+        .close:hover {
+            color: #000;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #eee;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            background: #f8f9fa;
+        }
+        
+        .tab.active {
+            border-bottom-color: #667eea;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            z-index: 2000;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .notification.success {
+            background: #28a745;
+        }
+        
+        .notification.error {
+            background: #dc3545;
+        }
+        
+        .notification.info {
+            background: #17a2b8;
+        }
+        
+        .search-box {
+            position: relative;
+            margin: 20px 0;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+        }
+        
+        .search-box::after {
+            content: "🔍";
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .highlight {
+            background: yellow;
+            font-weight: bold;
+        }
+        
+        .drag-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 5px 0;
+            border-radius: 5px;
+            cursor: move;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .drag-item:hover {
+            border-color: #667eea;
+        }
+        
+        .drag-item.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+        
+        .drop-zone {
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 10px 0;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .drop-zone.drag-over {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <header>
+            <h1>🚀 Advanced DOM Manipulation</h1>
+            <p>Interactive examples of advanced DOM operations and patterns</p>
+        </header>
+        
+        <!-- Dynamic Todo List -->
+        <section class="section">
+            <h2>📝 Dynamic Todo List</h2>
+            <div class="input-group">
+                <input type="text" id="todo-input" placeholder="Enter a new todo...">
+                <button class="btn btn-success" onclick="addTodo()">Add Todo</button>
+                <button class="btn" onclick="clearCompleted()">Clear Completed</button>
+            </div>
+            <div id="todo-list"></div>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-todos">0</div>
+                    <div class="stat-label">Total Todos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completed-todos">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pending-todos">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Modal Example -->
+        <section class="section">
+            <h2>🎭 Modal Dialog</h2>
+            <button class="btn" onclick="openModal()">Open Modal</button>
+            <button class="btn btn-success" onclick="openModalWithContent()">Open Modal with Dynamic Content</button>
+        </section>
+        
+        <!-- Tabs Example -->
+        <section class="section">
+            <h2>📑 Dynamic Tabs</h2>
+            <div class="tabs" id="tab-container">
+                <div class="tab active" onclick="switchTab('tab1', this)">Home</div>
+                <div class="tab" onclick="switchTab('tab2', this)">Profile</div>
+                <div class="tab" onclick="switchTab('tab3', this)">Settings</div>
+            </div>
+            <div id="tab1" class="tab-content active">
+                <h3>Home Tab</h3>
+                <p>Welcome to the home tab! This content is dynamically loaded.</p>
+                <button class="btn" onclick="addTabContent()">Add Dynamic Content</button>
+                <div id="dynamic-content"></div>
+            </div>
+            <div id="tab2" class="tab-content">
+                <h3>Profile Tab</h3>
+                <p>This is the profile tab content.</p>
+            </div>
+            <div id="tab3" class="tab-content">
+                <h3>Settings Tab</h3>
+                <p>Configure your settings here.</p>
+            </div>
+        </section>
+        
+        <!-- Progress Bar -->
+        <section class="section">
+            <h2>📊 Dynamic Progress Bar</h2>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="input-group">
+                <input type="number" id="progress-input" min="0" max="100" value="0" placeholder="Enter percentage">
+                <button class="btn" onclick="updateProgress()">Update Progress</button>
+                <button class="btn btn-success" onclick="animateProgress()">Animate to 100%</button>
+            </div>
+        </section>
+        
+        <!-- Search and Highlight -->
+        <section class="section">
+            <h2>🔍 Search and Highlight</h2>
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Search in content below..." oninput="searchAndHighlight()">
+            </div>
+            <div id="search-content">
+                <p>JavaScript is a powerful programming language that enables interactive web pages. 
+                JavaScript is an essential part of web applications, alongside HTML and CSS.</p>
+                <p>Many developers love JavaScript because of its versatility and large ecosystem. 
+                JavaScript can be used for both frontend and backend development.</p>
+                <p>Learning JavaScript opens up many opportunities for web developers. 
+                JavaScript frameworks like React, Vue, and Angular are very popular.</p>
+            </div>
+        </section>
+        
+        <!-- Drag and Drop -->
+        <section class="section">
+            <h2>🎯 Drag and Drop</h2>
+            <div class="grid">
+                <div>
+                    <h4>Drag Items</h4>
+                    <div id="drag-items">
+                        <div class="drag-item" draggable="true">Item 1</div>
+                        <div class="drag-item" draggable="true">Item 2</div>
+                        <div class="drag-item" draggable="true">Item 3</div>
+                    </div>
+                </div>
+                <div>
+                    <h4>Drop Zone</h4>
+                    <div class="drop-zone" id="drop-zone">
+                        Drop items here
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Dynamic Form -->
+        <section class="section">
+            <h2>📋 Dynamic Form Builder</h2>
+            <div class="input-group">
+                <select id="field-type">
+                    <option value="text">Text Input</option>
+                    <option value="number">Number Input</option>
+                    <option value="email">Email Input</option>
+                    <option value="select">Dropdown</option>
+                    <option value="textarea">Text Area</option>
+                </select>
+                <input type="text" id="field-label" placeholder="Field label">
+                <button class="btn" onclick="addFormField()">Add Field</button>
+            </div>
+            <form id="dynamic-form">
+                <!-- Dynamic fields will be added here -->
+            </form>
+            <button class="btn btn-success" onclick="submitDynamicForm()">Submit Form</button>
+            <div id="form-output"></div>
+        </section>
+        
+        <!-- Virtual Scrolling -->
+        <section class="section">
+            <h2>📜 Virtual Scrolling</h2>
+            <div style="height: 300px; overflow-y-auto; border: 1px solid #ddd; padding: 10px;" id="virtual-container">
+                <!-- Virtual items will be added here -->
+            </div>
+            <div class="input-group">
+                <input type="number" id="item-count" min="10" max="10000" value="1000" placeholder="Number of items">
+                <button class="btn" onclick="createVirtualList()">Create Virtual List</button>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title">Modal Title</h2>
+            <div id="modal-body">
+                <p>This is modal content. You can put anything here!</p>
+            </div>
+            <div style="margin-top: 20px;">
+                <button class="btn" onclick="closeModal()">Close</button>
+                <button class="btn btn-success" onclick="saveModal()">Save</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="advanced-dom.js"></script>
+</body>
+</html>
