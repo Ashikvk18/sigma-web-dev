@@ -12,3 +12,7 @@ if (x > 0) {
 else {
     console.log("x is negative");
 }
+while(x < 10) {
+    console.log(x);
+    x++;
+}
