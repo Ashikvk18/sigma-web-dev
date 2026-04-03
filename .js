@@ -6,3 +6,6 @@ console.log(y);
 for(let i = 0; i < 5; i++) {
     console.log(i);
 }
+if (x > 0) {
+    console.log("x is positive");
+}
