@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Quest - Learn JavaScript Through Gaming</title>
+    <link rel="stylesheet" href="game-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-code"></i>
+                    <span>JavaScript Quest</span>
+                </div>
+                <nav class="nav">
+                    <button class="nav-btn" onclick="showDashboard()">
+                        <i class="fas fa-home"></i> Dashboard
+                    </button>
+                    <button class="nav-btn" onclick="showMap()">
+                        <i class="fas fa-map"></i> Learning Map
+                    </button>
+                    <button class="nav-btn" onclick="showProfile()">
+                        <i class="fas fa-user"></i> Profile
+                    </button>
+                </nav>
+                <div class="player-stats">
+                    <div class="stat">
+                        <i class="fas fa-star"></i>
+                        <span id="player-level">Level 1</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-bolt"></i>
+                        <span id="player-xp">0 XP</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-trophy"></i>
+                        <span id="player-points">0 Points</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <section id="dashboard" class="view active">
+                <div class="dashboard-header">
+                    <h1>Welcome back, Coder! 🚀</h1>
+                    <p>Continue your JavaScript adventure</p>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <!-- Current Quest -->
+                    <div class="card current-quest">
+                        <div class="card-header">
+                            <h3><i class="fas fa-flag"></i> Current Quest</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="quest-info">
+                                <h4 id="current-quest-title">JavaScript Basics</h4>
+                                <p id="current-quest-desc">Master variables, data types, and basic operations</p>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="quest-progress" style="width: 0%"></div>
+                                </div>
+                                <span id="quest-progress-text">0% Complete</span>
+                            </div>
+                            <button class="btn-primary" onclick="continueQuest()">
+                                Continue Quest <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Daily Challenge -->
+                    <div class="card daily-challenge">
+                        <div class="card-header">
+                            <h3><i class="fas fa-calendar-day"></i> Daily Challenge</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="challenge-info">
+                                <h4>Array Manipulation Master</h4>
+                                <p>Solve 5 array problems to earn bonus XP!</p>
+                                <div class="challenge-rewards">
+                                    <span><i class="fas fa-bolt"></i> +50 XP</span>
+                                    <span><i class="fas fa-trophy"></i> +100 Points</span>
+                                </div>
+                            </div>
+                            <button class="btn-secondary" onclick="startDailyChallenge()">
+                                Start Challenge <i class="fas fa-play"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Achievements -->
+                    <div class="card achievements">
+                        <div class="card-header">
+                            <h3><i class="fas fa-medal"></i> Recent Achievements</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="achievement-list" id="recent-achievements">
+                                <div class="achievement">
+                                    <i class="fas fa-star achievement-icon"></i>
+                                    <div class="achievement-info">
+                                        <span class="achievement-title">First Steps</span>
+                                        <span class="achievement-desc">Complete your first lesson</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn-secondary" onclick="showAllAchievements()">
+                                View All <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Leaderboard -->
+                    <div class="card leaderboard">
+                        <div class="card-header">
+                            <h3><i class="fas fa-crown"></i> Leaderboard</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="leaderboard-list">
+                                <div class="leaderboard-item">
+                                    <span class="rank">1</span>
+                                    <span class="name">CodeMaster</span>
+                                    <span class="score">2,450 XP</span>
+                                </div>
+                                <div class="leaderboard-item">
+                                    <span class="rank">2</span>
+                                    <span class="name">JSNinja</span>
+                                    <span class="score">2,100 XP</span>
+                                </div>
+                                <div class="leaderboard-item">
+                                    <span class="rank">3</span>
+                                    <span class="name">WebWizard</span>
+                                    <span class="score">1,950 XP</span>
+                                </div>
+                                <div class="leaderboard-item player-rank">
+                                    <span class="rank">15</span>
+                                    <span class="name">You</span>
+                                    <span class="score">450 XP</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Learning Map View -->
+            <section id="learning-map" class="view">
+                <div class="map-header">
+                    <h1>JavaScript Learning Map 🗺️</h1>
+                    <p>Choose your path through JavaScript mastery</p>
+                </div>
+                
+                <div class="learning-map-grid">
+                    <!-- Basics World -->
+                    <div class="world">
+                        <h3><i class="fas fa-book"></i> Basics World</h3>
+                        <div class="lessons">
+                            <div class="lesson completed" onclick="startLesson('variables')">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Variables & Data Types</span>
+                            </div>
+                            <div class="lesson completed" onclick="startLesson('operators')">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Operators & Expressions</span>
+                            </div>
+                            <div class="lesson current" onclick="startLesson('functions')">
+                                <i class="fas fa-play-circle"></i>
+                                <span>Functions</span>
+                            </div>
+                            <div class="lesson locked" onclick="startLesson('conditionals')">
+                                <i class="fas fa-lock"></i>
+                                <span>Conditionals</span>
+                            </div>
+                            <div class="lesson locked" onclick="startLesson('loops')">
+                                <i class="fas fa-lock"></i>
+                                <span>Loops</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Intermediate World -->
+                    <div class="world">
+                        <h3><i class="fas fa-cogs"></i> Intermediate World</h3>
+                        <div class="lessons">
+                            <div class="lesson locked" onclick="startLesson('arrays')">
+                                <i class="fas fa-lock"></i>
+                                <span>Arrays & Objects</span>
+                            </div>
+                            <div class="lesson locked" onclick="startLesson('dom')">
+                                <i class="fas fa-lock"></i>
+                                <span>DOM Manipulation</span>
+                            </div>
+                            <div class="lesson locked" onclick="startLesson('events')">
+                                <i class="fas fa-lock"></i>
+                                <span>Event Handling</span>
+                            </div>
+                            <div class="lesson locked" onclick="startLesson('async')">
+                                <i class="fas fa-lock"></i>
+                                <span>Async JavaScript</span>
+                            </div>
+                            <div class="lesson locked" onclick="startLesson('error')">
+                                <i class="fas fa-lock"></i>
+                                <span>Error Handling</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advanced World -->
+                    <div class="world">
+                        <h3><i class="fas fa-rocket"></i> Advanced World</h3>
+                        <div class="lessons">
+                            <div class="lesson locked" onclick="startLesson('patterns')">
+                                <i class="fas fa-lock"></i>
+                                <span>Design Patterns</span>
+                            </div>
+                            <div class="lesson locked" onclick="startLesson('modules')">
+                                <i class="fas fa-lock"></i>
+                                <span>Modules & Imports</span>
+                            </div>
+                            <div class="lesson locked" onclick="startLesson('apis')">
+                                <i class="fas fa-lock"></i>
+                                <span>Browser APIs</span>
+                            </div>
+                            <div class="lesson locked" onclick="startLesson('performance')">
+                                <i class="fas fa-lock"></i>
+                                <span>Performance</span>
+                            </div>
+                            <div class="lesson locked" onclick="startLesson('testing')">
+                                <i class="fas fa-lock"></i>
+                                <span>Testing</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Master World -->
+                    <div class="world">
+                        <h3><i class="fas fa-crown"></i> Master World</h3>
+                        <div class="lessons">
+                            <div class="lesson locked" onclick="startLesson('frameworks')">
+                                <i class="fas fa-lock"></i>
+                                <span>Frameworks</span>
+                            </div>
+                            <div class="lesson locked" onclick="startLesson('nodejs')">
+                                <i class="fas fa-lock"></i>
+                                <span>Node.js</span>
+                            </div>
+                            <div class="lesson locked" onclick="startLesson('typescript')">
+                                <i class="fas fa-lock"></i>
+                                <span>TypeScript</span>
+                            </div>
+                            <div class="lesson locked" onclick="startLesson('projects')">
+                                <i class="fas fa-lock"></i>
+                                <span>Capstone Projects</span>
+                            </div>
+                            <div class="lesson legendary locked" onclick="startLesson('mastery')">
+                                <i class="fas fa-lock"></i>
+                                <span>JavaScript Mastery</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Profile View -->
+            <section id="profile" class="view">
+                <div class="profile-header">
+                    <div class="avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="player-info">
+                        <h2>JavaScript Coder</h2>
+                        <p>Level 1 • 450 XP • 100 Points</p>
+                    </div>
+                </div>
+                
+                <div class="profile-stats">
+                    <div class="stat-card">
+                        <i class="fas fa-fire"></i>
+                        <div class="stat-info">
+                            <span class="stat-value">5</span>
+                            <span class="stat-label">Day Streak</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-clock"></i>
+                        <div class="stat-info">
+                            <span class="stat-value">12h</span>
+                            <span class="stat-label">Time Spent</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-check"></i>
+                        <div class="stat-info">
+                            <span class="stat-value">23</span>
+                            <span class="stat-label">Lessons Done</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-code"></i>
+                        <div class="stat-info">
+                            <span class="stat-value">156</span>
+                            <span class="stat-label">Problems Solved</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-sections">
+                    <div class="section">
+                        <h3><i class="fas fa-medal"></i> Achievements</h3>
+                        <div class="achievements-grid">
+                            <div class="achievement earned">
+                                <i class="fas fa-star"></i>
+                                <span>First Steps</span>
+                            </div>
+                            <div class="achievement earned">
+                                <i class="fas fa-fire"></i>
+                                <span>Week Warrior</span>
+                            </div>
+                            <div class="achievement">
+                                <i class="fas fa-lock"></i>
+                                <span>Speed Coder</span>
+                            </div>
+                            <div class="achievement">
+                                <i class="fas fa-lock"></i>
+                                <span>Perfect Score</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3><i class="fas fa-chart-line"></i> Progress Chart</h3>
+                        <div class="progress-chart">
+                            <canvas id="progressChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Lesson View -->
+            <section id="lesson" class="view">
+                <div class="lesson-header">
+                    <button class="back-btn" onclick="showDashboard()">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </button>
+                    <h2 id="lesson-title">Lesson Title</h2>
+                    <div class="lesson-progress">
+                        <span id="lesson-progress-text">0/0 Complete</span>
+                    </div>
+                </div>
+                
+                <div class="lesson-content">
+                    <div class="lesson-sidebar">
+                        <div class="lesson-navigation">
+                            <h3>Lesson Content</h3>
+                            <ul id="lesson-topics">
+                                <!-- Topics will be populated dynamically -->
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="lesson-main">
+                        <div id="lesson-area">
+                            <!-- Lesson content will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="achievement-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-trophy"></i> Achievement Unlocked!</h2>
+                <button class="close-btn" onclick="closeModal('achievement-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="achievement-display">
+                    <i class="fas fa-star achievement-icon"></i>
+                    <h3 id="achievement-title">Achievement Name</h3>
+                    <p id="achievement-desc">Achievement Description</p>
+                    <div class="achievement-rewards">
+                        <span><i class="fas fa-bolt"></i> +25 XP</span>
+                        <span><i class="fas fa-trophy"></i> +50 Points</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="level-up-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="level-up-display">
+                    <i class="fas fa-level-up-alt"></i>
+                    <h2>Level Up!</h2>
+                    <p>You've reached Level <span id="new-level">2</span>!</p>
+                    <div class="rewards">
+                        <span><i class="fas fa-bolt"></i> +100 XP Bonus</span>
+                        <span><i class="fas fa-gift"></i> New Unlock</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="game-data.js"></script>
+    <script src="game-engine.js"></script>
+    <script src="lessons.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
