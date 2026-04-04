@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced JavaScript Patterns Playground</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: flex-end;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        label {
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            padding: 10px 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+        
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .result-display {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            min-height: 100px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .pattern-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .pattern-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .pattern-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .pattern-description {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e9ecef;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            background: #f8f9fa;
+        }
+        
+        .tab.active {
+            border-bottom-color: #667eea;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .notification.success {
+            background: #10b981;
+        }
+        
+        .notification.error {
+            background: #ef4444;
+        }
+        
+        .notification.info {
+            background: #3b82f6;
+        }
+        
+        .notification.warning {
+            background: #f59e0b;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .feature-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .feature-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .feature-description {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .code-example {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        
+        .pattern-diagram {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .diagram-box {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin: 5px;
+            font-weight: bold;
+        }
+        
+        .diagram-arrow {
+            font-size: 1.5rem;
+            margin: 0 10px;
+        }
+        
+        .performance-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f3f4;
+        }
+        
+        .performance-metric:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-name {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .metric-value {
+            color: #667eea;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏗️ Advanced JavaScript Patterns Playground</h1>
+            <p>Master design patterns and advanced JavaScript concepts</p>
+        </header>
+        
+        <!-- Patterns Overview -->
+        <section class="section">
+            <h2>Design Patterns Overview</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🏭</div>
+                    <div class="feature-title">Creational Patterns</div>
+                    <div class="feature-description">Object creation mechanisms</div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <div class="feature-title">Structural Patterns</div>
+                    <div class="feature-description">Object composition patterns</div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">Behavioral Patterns</div>
+                    <div class="feature-description">Object interaction patterns</div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <div class="feature-title">Functional Patterns</div>
+                    <div class="feature-description">Functional programming concepts</div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <div class="feature-title">Async Patterns</div>
+                    <div class="feature-description">Asynchronous programming patterns</div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">Performance Patterns</div>
+                    <div class="feature-description">Optimization techniques</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Creational Patterns -->
+        <section class="section">
+            <h2>Creational Patterns</h2>
+            <div class="tabs">
+                <div class="tab active" onclick="switchCreationalTab('singleton')">Singleton</div>
+                <div class="tab" onclick="switchCreationalTab('factory')">Factory</div>
+                <div class="tab" onclick="switchCreationalTab('builder')">Builder</div>
+                <div class="tab" onclick="switchCreationalTab('prototype')">Prototype</div>
+            </div>
+            
+            <div id="singleton-tab" class="tab-content active">
+                <h3>Singleton Pattern</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="demoSingleton()">Demo Singleton</button>
+                    <button class="btn btn-success" onclick="testSingletonUniqueness()">Test Uniqueness</button>
+                    <button class="btn btn-warning" onclick="showSingletonCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">Singleton</div>
+                    <div class="diagram-arrow">↔</div>
+                    <div class="diagram-box">Instance</div>
+                </div>
+                <div id="singleton-result" class="result-display">Click "Demo Singleton" to see the pattern in action...</div>
+            </div>
+            
+            <div id="factory-tab" class="tab-content">
+                <h3>Factory Pattern</h3>
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="product-type">Product Type</label>
+                        <select id="product-type">
+                            <option value="car">Car</option>
+                            <option value="bike">Bike</option>
+                            <option value="truck">Truck</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="demoFactory()">Create Product</button>
+                    <button class="btn btn-success" onclick="showFactoryCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">Factory</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">Product</div>
+                </div>
+                <div id="factory-result" class="result-display">Select a product type and click "Create Product"...</div>
+            </div>
+            
+            <div id="builder-tab" class="tab-content">
+                <h3>Builder Pattern</h3>
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="builder-name">Name</label>
+                        <input type="text" id="builder-name" value="Custom Computer">
+                    </div>
+                    <div class="control-group">
+                        <label for="builder-cpu">CPU</label>
+                        <select id="builder-cpu">
+                            <option value="i5">Intel i5</option>
+                            <option value="i7">Intel i7</option>
+                            <option value="i9">Intel i9</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="builder-ram">RAM</label>
+                        <select id="builder-ram">
+                            <option value="8GB">8GB</option>
+                            <option value="16GB">16GB</option>
+                            <option value="32GB">32GB</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="demoBuilder()">Build Computer</button>
+                    <button class="btn btn-success" onclick="showBuilderCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">Builder</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">Product</div>
+                </div>
+                <div id="builder-result" class="result-display">Configure your computer and click "Build Computer"...</div>
+            </div>
+            
+            <div id="prototype-tab" class="tab-content">
+                <h3>Prototype Pattern</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="demoPrototype()">Demo Prototype</button>
+                    <button class="btn btn-success" onclick="clonePrototype()">Clone Object</button>
+                    <button class="btn btn-warning" onclick="showPrototypeCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">Prototype</div>
+                    <div class="diagram-arrow">↩</div>
+                    <div class="diagram-box">Clone</div>
+                </div>
+                <div id="prototype-result" class="result-display">Click "Demo Prototype" to see cloning in action...</div>
+            </div>
+        </section>
+        
+        <!-- Structural Patterns -->
+        <section class="section">
+            <h2>Structural Patterns</h2>
+            <div class="tabs">
+                <div class="tab active" onclick="switchStructuralTab('adapter')">Adapter</div>
+                <div class="tab" onclick="switchStructuralTab('decorator')">Decorator</div>
+                <div class="tab" onclick="switchStructuralTab('facade')">Facade</div>
+                <div class="tab" onclick="switchStructuralTab('proxy')">Proxy</div>
+            </div>
+            
+            <div id="adapter-tab" class="tab-content active">
+                <h3>Adapter Pattern</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="demoAdapter()">Demo Adapter</button>
+                    <button class="btn btn-success" onclick="testLegacySystem()">Test Legacy System</button>
+                    <button class="btn btn-warning" onclick="showAdapterCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">Client</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">Adapter</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">Legacy</div>
+                </div>
+                <div id="adapter-result" class="result-display">Click "Demo Adapter" to see how incompatible interfaces work together...</div>
+            </div>
+            
+            <div id="decorator-tab" class="tab-content">
+                <h3>Decorator Pattern</h3>
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="coffee-type">Coffee Type</label>
+                        <select id="coffee-type">
+                            <option value="simple">Simple Coffee</option>
+                            <option value="espresso">Espresso</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="addMilk()">Add Milk</button>
+                    <button class="btn btn-success" onclick="addSugar()">Add Sugar</button>
+                    <button class="btn btn-warning" onclick="addWhip()">Add Whip</button>
+                    <button class="btn btn-info" onclick="showCoffeeCost()">Show Cost</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">Component</div>
+                    <div class="diagram-arrow">←</div>
+                    <div class="diagram-box">Decorator</div>
+                </div>
+                <div id="decorator-result" class="result-display">Select coffee and add toppings to see decorator pattern...</div>
+            </div>
+            
+            <div id="facade-tab" class="tab-content">
+                <h3>Facade Pattern</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="demoFacade()">Demo Facade</button>
+                    <button class="btn btn-success" onclick="complexOperation()">Complex Operation</button>
+                    <button class="btn btn-warning" onclick="showFacadeCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">Client</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">Facade</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">Subsystems</div>
+                </div>
+                <div id="facade-result" class="result-display">Click "Demo Facade" to simplify complex subsystem interactions...</div>
+            </div>
+            
+            <div id="proxy-tab" class="tab-content">
+                <h3>Proxy Pattern</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="demoProxy()">Demo Proxy</button>
+                    <button class="btn btn-success" onclick="accessResource()">Access Resource</button>
+                    <button class="btn btn-warning" onclick="showProxyCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">Client</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">Proxy</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">Real Subject</div>
+                </div>
+                <div id="proxy-result" class="result-display">Click "Demo Proxy" to see controlled access to resources...</div>
+            </div>
+        </section>
+        
+        <!-- Behavioral Patterns -->
+        <section class="section">
+            <h2>Behavioral Patterns</h2>
+            <div class="tabs">
+                <div class="tab active" onclick="switchBehavioralTab('observer')">Observer</div>
+                <div class="tab" onclick="switchBehavioralTab('strategy')">Strategy</div>
+                <div class="tab" onclick="switchBehavioralTab('command')">Command</div>
+                <div class="tab" onclick="switchBehavioralTab('state')">State</div>
+            </div>
+            
+            <div id="observer-tab" class="tab-content active">
+                <h3>Observer Pattern</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="demoObserver()">Demo Observer</button>
+                    <button class="btn btn-success" onclick="subscribeObserver()">Subscribe</button>
+                    <button class="btn btn-warning" onclick="notifyObservers()">Notify</button>
+                    <button class="btn btn-info" onclick="unsubscribeObserver()">Unsubscribe</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">Subject</div>
+                    <div class="diagram-arrow">↔</div>
+                    <div class="diagram-box">Observers</div>
+                </div>
+                <div id="observer-result" class="result-display">Click "Demo Observer" to see pub-sub pattern in action...</div>
+            </div>
+            
+            <div id="strategy-tab" class="tab-content">
+                <h3>Strategy Pattern</h3>
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="payment-method">Payment Method</label>
+                        <select id="payment-method">
+                            <option value="credit">Credit Card</option>
+                            <option value="paypal">PayPal</option>
+                            <option value="bitcoin">Bitcoin</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="payment-amount">Amount</label>
+                        <input type="number" id="payment-amount" value="100" min="1">
+                    </div>
+                    <button class="btn btn-primary" onclick="processPayment()">Process Payment</button>
+                    <button class="btn btn-success" onclick="showStrategyCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">Context</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">Strategy</div>
+                </div>
+                <div id="strategy-result" class="result-display">Select payment method and amount to see strategy pattern...</div>
+            </div>
+            
+            <div id="command-tab" class="tab-content">
+                <h3>Command Pattern</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="demoCommand()">Demo Command</button>
+                    <button class="btn btn-success" onclick="executeCommand()">Execute</button>
+                    <button class="btn btn-warning" onclick="undoCommand()">Undo</button>
+                    <button class="btn btn-info" onclick="showCommandHistory()">Show History</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">Invoker</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">Command</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">Receiver</div>
+                </div>
+                <div id="command-result" class="result-display">Click "Demo Command" to see encapsulated operations...</div>
+            </div>
+            
+            <div id="state-tab" class="tab-content">
+                <h3>State Pattern</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="demoState()">Demo State</button>
+                    <button class="btn btn-success" onclick="orderNext()">Next State</button>
+                    <button class="btn btn-warning" onclick="cancelOrder()">Cancel Order</button>
+                    <button class="btn btn-info" onclick="showStateCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">Context</div>
+                    <div class="diagram-arrow">↔</div>
+                    <div class="diagram-box">State</div>
+                </div>
+                <div id="state-result" class="result-display">Click "Demo State" to see state transitions...</div>
+            </div>
+        </section>
+        
+        <!-- Functional Patterns -->
+        <section class="section">
+            <h2>Functional Programming Patterns</h2>
+            <div class="tabs">
+                <div class="tab active" onclick="switchFunctionalTab('currying')">Currying</div>
+                <div class="tab" onclick="switchFunctionalTab('composition')">Composition</div>
+                <div class="tab" onclick="switchFunctionalTab('memoization')">Memoization</div>
+                <div class="tab" onclick="switchFunctionalTab('immutable')">Immutable</div>
+            </div>
+            
+            <div id="currying-tab" class="tab-content active">
+                <h3>Currying Pattern</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="demoCurrying()">Demo Currying</button>
+                    <button class="btn btn-success" onclick="createCurriedFunction()">Create Function</button>
+                    <button class="btn btn-warning" onclick="showCurryingCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">f(a, b, c)</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">f(a)(b)(c)</div>
+                </div>
+                <div id="currying-result" class="result-display">Click "Demo Currying" to see function transformation...</div>
+            </div>
+            
+            <div id="composition-tab" class="tab-content">
+                <h3>Function Composition</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="demoComposition()">Demo Composition</button>
+                    <button class="btn btn-success" onclick="composeFunctions()">Compose Functions</button>
+                    <button class="btn btn-warning" onclick="showCompositionCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">f ∘ g</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">f(g(x))</div>
+                </div>
+                <div id="composition-result" class="result-display">Click "Demo Composition" to see function chaining...</div>
+            </div>
+            
+            <div id="memoization-tab" class="tab-content">
+                <h3>Memoization Pattern</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="demoMemoization()">Demo Memoization</button>
+                    <button class="btn btn-success" onclick="testMemoization()">Test Performance</button>
+                    <button class="btn btn-warning" onclick="showMemoizationCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">Function</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">Cache</div>
+                </div>
+                <div id="memoization-result" class="result-display">Click "Demo Memoization" to see caching optimization...</div>
+            </div>
+            
+            <div id="immutable-tab" class="tab-content">
+                <h3>Immutable Patterns</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="demoImmutable()">Demo Immutable</button>
+                    <button class="btn btn-success" onclick="updateImmutable()">Update Data</button>
+                    <button class="btn btn-warning" onclick="showImmutableCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">Original</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">New Copy</div>
+                </div>
+                <div id="immutable-result" class="result-display">Click "Demo Immutable" to see data immutability...</div>
+            </div>
+        </section>
+        
+        <!-- Async Patterns -->
+        <section class="section">
+            <h2>Asynchronous Patterns</h2>
+            <div class="tabs">
+                <div class="tab active" onclick="switchAsyncTab('promises')">Promises</div>
+                <div class="tab" onclick="switchAsyncTab('asyncawait')">Async/Await</div>
+                <div class="tab" onclick="switchAsyncTab('observables')">Observables</div>
+                <div class="tab" onclick="switchAsyncTab('generators')">Generators</div>
+            </div>
+            
+            <div id="promises-tab" class="tab-content active">
+                <h3>Promise Patterns</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="demoPromises()">Demo Promises</button>
+                    <button class="btn btn-success" onclick="chainPromises()">Chain Promises</button>
+                    <button class="btn btn-warning" onclick="parallelPromises()">Parallel Promises</button>
+                    <button class="btn btn-info" onclick="showPromiseCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">Pending</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">Fulfilled/Rejected</div>
+                </div>
+                <div id="promises-result" class="result-display">Click "Demo Promises" to see async patterns...</div>
+            </div>
+            
+            <div id="asyncawait-tab" class="tab-content">
+                <h3>Async/Await Patterns</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="demoAsyncAwait()">Demo Async/Await</button>
+                    <button class="btn btn-success" onclick="sequentialAsync()">Sequential</button>
+                    <button class="btn btn-warning" onclick="parallelAsync()">Parallel</button>
+                    <button class="btn btn-info" onclick="showAsyncCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">async</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">await</div>
+                </div>
+                <div id="asyncawait-result" class="result-display">Click "Demo Async/Await" to see modern async patterns...</div>
+            </div>
+            
+            <div id="observables-tab" class="tab-content">
+                <h3>Observable Patterns</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="demoObservables()">Demo Observables</button>
+                    <button class="btn btn-success" onclick="createObservable()">Create Observable</button>
+                    <button class="btn btn-warning" onclick="showObservableCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">Observable</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">Observer</div>
+                </div>
+                <div id="observables-result" class="result-display">Click "Demo Observables" to see reactive patterns...</div>
+            </div>
+            
+            <div id="generators-tab" class="tab-content">
+                <h3>Generator Patterns</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="demoGenerators()">Demo Generators</button>
+                    <button class="btn btn-success" onclick="createGenerator()">Create Generator</button>
+                    <button class="btn btn-warning" onclick="showGeneratorCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">function*</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">yield</div>
+                </div>
+                <div id="generators-result" class="result-display">Click "Demo Generators" to see lazy evaluation...</div>
+            </div>
+        </section>
+        
+        <!-- Performance Patterns -->
+        <section class="section">
+            <h2>Performance Patterns</h2>
+            <div class="tabs">
+                <div class="tab active" onclick="switchPerformanceTab('throttling')">Throttling</div>
+                <div class="tab" onclick="switchPerformanceTab('debouncing')">Debouncing</div>
+                <div class="tab" onclick="switchPerformanceTab('lazyloading')">Lazy Loading</div>
+                <div class="tab" onclick="switchPerformanceTab('pooling')">Object Pooling</div>
+            </div>
+            
+            <div id="throttling-tab" class="tab-content active">
+                <h3>Throttling Pattern</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="demoThrottling()">Demo Throttling</button>
+                    <button class="btn btn-success" onclick="testThrottling()">Test Throttling</button>
+                    <button class="btn btn-warning" onclick="showThrottlingCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">Events</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">Throttle</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">Limited</div>
+                </div>
+                <div id="throttling-result" class="result-display">Click "Demo Throttling" to see rate limiting...</div>
+            </div>
+            
+            <div id="debouncing-tab" class="tab-content">
+                <h3>Debouncing Pattern</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="demoDebouncing()">Demo Debouncing</button>
+                    <button class="btn btn-success" onclick="testDebouncing()">Test Debouncing</button>
+                    <button class="btn btn-warning" onclick="showDebouncingCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">Events</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">Debounce</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">Delayed</div>
+                </div>
+                <div id="debouncing-result" class="result-display">Click "Demo Debouncing" to see delayed execution...</div>
+            </div>
+            
+            <div id="lazyloading-tab" class="tab-content">
+                <h3>Lazy Loading Pattern</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="demoLazyLoading()">Demo Lazy Loading</button>
+                    <button class="btn btn-success" onclick="loadModule()">Load Module</button>
+                    <button class="btn btn-warning" onclick="showLazyCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">Request</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">Load</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">Execute</div>
+                </div>
+                <div id="lazyloading-result" class="result-display">Click "Demo Lazy Loading" to see on-demand loading...</div>
+            </div>
+            
+            <div id="pooling-tab" class="tab-content">
+                <h3>Object Pooling Pattern</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="demoObjectPooling()">Demo Pooling</button>
+                    <button class="btn btn-success" onclick="testPooling()">Test Pooling</button>
+                    <button class="btn btn-warning" onclick="showPoolingCode()">Show Code</button>
+                </div>
+                <div class="pattern-diagram">
+                    <div class="diagram-box">Pool</div>
+                    <div class="diagram-arrow">↔</div>
+                    <div class="diagram-box">Objects</div>
+                </div>
+                <div id="pooling-result" class="result-display">Click "Demo Pooling" to see resource reuse...</div>
+            </div>
+        </section>
+        
+        <!-- Pattern Best Practices -->
+        <section class="section">
+            <h2>Pattern Best Practices</h2>
+            <div class="pattern-card" onclick="showBestPractice('choosing')">
+                <div class="pattern-title">🎯 Choosing Patterns</div>
+                <div class="pattern-description">Select the right pattern for your use case</div>
+            </div>
+            
+            <div class="pattern-card" onclick="showBestPractice('implementing')">
+                <div class="pattern-title">🔧 Implementation</div>
+                <div class="pattern-description">Implement patterns correctly and efficiently</div>
+            </div>
+            
+            <div class="pattern-card" onclick="showBestPractice('antipatterns')">
+                <div class="pattern-title">⚠️ Anti-Patterns</div>
+                <div class="pattern-description">Common mistakes and how to avoid them</div>
+            </div>
+            
+            <div class="pattern-card" onclick="showBestPractice('testing')">
+                <div class="pattern-title">🧪 Testing Patterns</div>
+                <div class="pattern-description">Test pattern implementations effectively</div>
+            </div>
+            
+            <div class="pattern-card" onclick="showBestPractice('performance')">
+                <div class="pattern-title">⚡ Performance</div>
+                <div class="pattern-description">Optimize pattern performance</div>
+            </div>
+            
+            <div class="pattern-card" onclick="showBestPractice('modern')">
+                <div class="pattern-title">🚀 Modern JavaScript</div>
+                <div class="pattern-description">Adapt patterns for modern JavaScript features</div>
+            </div>
+            
+            <div id="best-practice-content" class="result-display">Click on a best practice to see detailed information...</div>
+        </section>
+    </div>
+    
+    <script src="patterns-playground.js"></script>
+</body>
+</html>
