@@ -1067,6 +1067,52 @@ function pickBugLine(lineIndex) {
 }
 
 // ========================================
+// EXPORT / IMPORT PROGRESS
+// ========================================
+
+function exportProgress() {
+    const data = {
+        player: GameData.player,
+        exportedAt: new Date().toISOString(),
+        version: '1.0'
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `jsquest-save-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    if (window.gameEngine) window.gameEngine.showNotification('Progress exported!', 'success');
+}
+
+function importProgress(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (!data.player || typeof data.player.xp !== 'number') {
+                throw new Error('Invalid save file');
+            }
+            Object.assign(GameData.player, data.player);
+            GameUtils.saveGameState();
+            if (window.gameEngine) {
+                window.gameEngine.updatePlayerStats();
+                window.gameEngine.updateDashboard();
+                window.gameEngine.showNotification('Progress imported successfully!', 'success');
+            }
+        } catch (err) {
+            if (window.gameEngine) window.gameEngine.showNotification('Invalid save file.', 'error');
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
+// ========================================
 // INIT: Check daily login on load
 // ========================================
 

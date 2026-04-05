@@ -625,6 +625,13 @@
                         <input type="text" class="setting-input" id="setting-name" value="JavaScript Coder" onchange="updatePlayerName(this.value)">
                     </div>
                     <div class="setting-actions">
+                        <button class="btn-secondary" onclick="exportProgress()">
+                            <i class="fas fa-download"></i> Export Save
+                        </button>
+                        <label class="btn-secondary import-btn" style="cursor:pointer;">
+                            <i class="fas fa-upload"></i> Import Save
+                            <input type="file" id="import-file" accept=".json" onchange="importProgress(event)" style="display:none;" />
+                        </label>
                         <button class="btn-danger" onclick="resetAllProgress()">
                             <i class="fas fa-trash"></i> Reset All Progress
                         </button>
