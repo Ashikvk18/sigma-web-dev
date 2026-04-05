@@ -408,7 +408,7 @@ class GameEngine {
         // Per-world progress bars
         const worlds = ['basics', 'intermediate', 'advanced', 'master'];
         const labels = ['Basics', 'Intermediate', 'Advanced', 'Master'];
-        const colors = ['#667eea', '#10b981', '#f59e0b', '#ef4444'];
+        const colors = ['#e4002b', '#d4af37', '#ff3333', '#8b0000'];
         const barH = 24;
         const gap = 16;
         const startY = 20;
@@ -422,13 +422,13 @@ class GameEngine {
             const y = startY + i * (barH + gap);
             
             // Label
-            ctx.fillStyle = '#94a1b2';
+            ctx.fillStyle = '#a0a0a0';
             ctx.font = '13px Inter, sans-serif';
             ctx.textAlign = 'right';
             ctx.fillText(labels[i], labelW - 10, y + barH / 2 + 4);
             
             // Background bar
-            ctx.fillStyle = 'rgba(102, 126, 234, 0.1)';
+            ctx.fillStyle = 'rgba(228, 0, 43, 0.1)';
             ctx.beginPath();
             ctx.roundRect(labelW, y, barMaxW, barH, 6);
             ctx.fill();

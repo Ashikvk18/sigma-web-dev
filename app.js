@@ -100,7 +100,7 @@ class JavaScriptQuestApp {
             particle.style.left = `${Math.random() * 100}%`;
             particle.style.animationDuration = `${Math.random() * 20 + 15}s`;
             particle.style.animationDelay = `${Math.random() * 15}s`;
-            const colors = ['#667eea', '#764ba2', '#10b981', '#a78bfa', '#3b82f6'];
+            const colors = ['#e4002b', '#8b0000', '#d4af37', '#ff3333', '#b8960c'];
             particle.style.background = colors[Math.floor(Math.random() * colors.length)];
             container.appendChild(particle);
         }
@@ -123,7 +123,7 @@ class JavaScriptQuestApp {
         canvas.height = window.innerHeight;
 
         const pieces = [];
-        const colors = ['#667eea', '#764ba2', '#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#a78bfa'];
+        const colors = ['#e4002b', '#8b0000', '#d4af37', '#ff3333', '#b8960c', '#ffcc00', '#cc0022'];
 
         for (let i = 0; i < 120; i++) {
             pieces.push({
@@ -263,11 +263,11 @@ class JavaScriptQuestApp {
     showLoadingScreen() {
         const ls = document.createElement('div');
         ls.id = 'loading-screen';
-        ls.style.cssText = 'position:fixed;inset:0;background:#0f0e17;display:flex;justify-content:center;align-items:center;z-index:4000;transition:opacity 0.5s';
+        ls.style.cssText = 'position:fixed;inset:0;background:#0a0a0a;display:flex;justify-content:center;align-items:center;z-index:4000;transition:opacity 0.5s';
         ls.innerHTML = `
             <div style="text-align:center;">
-                <div style="width:50px;height:50px;border:3px solid rgba(102,126,234,0.2);border-top-color:#667eea;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1rem;"></div>
-                <div style="color:#667eea;font-weight:700;font-size:1.1rem;font-family:Inter,sans-serif;">Loading JavaScript Quest...</div>
+                <div style="width:50px;height:50px;border:3px solid rgba(228,0,43,0.2);border-top-color:#e4002b;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1rem;"></div>
+                <div style="color:#e4002b;font-weight:700;font-size:1.1rem;font-family:Inter,sans-serif;">Loading JavaScript Quest...</div>
             </div>
         `;
         const spinStyle = document.createElement('style');
@@ -297,7 +297,7 @@ class JavaScriptQuestApp {
                 <div class="modal-body">
                     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.6rem;margin-bottom:1.5rem;">
                         ${[['1','Dashboard'],['2','Learning Map'],['3','Profile'],['Esc','Close Modal'],['H','Help'],['Ctrl+S','Save Game']].map(([k,v]) =>
-                            `<div style="display:flex;align-items:center;gap:0.6rem;"><kbd style="background:rgba(102,126,234,0.15);padding:0.25rem 0.6rem;border-radius:6px;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:0.8rem;">${k}</kbd><span style="font-size:0.9rem;">${v}</span></div>`
+                            `<div style="display:flex;align-items:center;gap:0.6rem;"><kbd style="background:rgba(228,0,43,0.15);padding:0.25rem 0.6rem;border-radius:6px;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:0.8rem;">${k}</kbd><span style="font-size:0.9rem;">${v}</span></div>`
                         ).join('')}
                     </div>
                     <h4 style="color:var(--primary-color);margin-bottom:0.75rem;">How to Play</h4>
