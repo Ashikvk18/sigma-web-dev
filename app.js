@@ -386,4 +386,480 @@ function filterLessons(query) {
     });
 }
 
+// ========================================
+// SHOP SYSTEM
+// ========================================
+
+function openShop() {
+    const grid = document.getElementById('shop-grid');
+    if (!grid) return;
+
+    document.getElementById('shop-coins').textContent = GameData.player.coins;
+    document.getElementById('shop-gems').textContent = GameData.player.gems;
+
+    let html = '';
+    GameData.shopItems.forEach(item => {
+        const owned = GameData.player.ownedCosmetics.includes(item.id);
+        const canAfford = item.currency === 'coins'
+            ? GameData.player.coins >= item.cost
+            : GameData.player.gems >= item.cost;
+
+        html += `
+            <div class="shop-item ${owned ? 'owned' : ''}">
+                <i class="${item.icon} shop-icon"></i>
+                <span class="shop-item-name">${item.name}</span>
+                <span class="shop-item-desc">${item.desc}</span>
+                <span class="shop-item-cost">
+                    <i class="fas ${item.currency === 'coins' ? 'fa-coins coin-icon' : 'fa-gem gem-icon'}"></i>
+                    ${item.cost}
+                </span>
+                ${owned
+                    ? '<span style="color:var(--success-color);font-weight:600;font-size:0.85rem;">Owned ✓</span>'
+                    : `<button class="shop-buy-btn" ${!canAfford ? 'disabled' : ''} onclick="buyShopItem('${item.id}')">
+                        ${canAfford ? 'Buy' : 'Not enough'}
+                    </button>`
+                }
+            </div>
+        `;
+    });
+    grid.innerHTML = html;
+    document.getElementById('shop-modal').classList.add('active');
+}
+
+function buyShopItem(itemId) {
+    const item = GameData.shopItems.find(i => i.id === itemId);
+    if (!item) return;
+    if (GameData.player.ownedCosmetics.includes(itemId)) return;
+
+    if (item.currency === 'coins') {
+        if (GameData.player.coins < item.cost) return;
+        GameData.player.coins -= item.cost;
+    } else {
+        if (GameData.player.gems < item.cost) return;
+        GameData.player.gems -= item.cost;
+    }
+
+    if (item.type === 'title' || item.type === 'theme') {
+        GameData.player.ownedCosmetics.push(itemId);
+    }
+
+    // Award bonus: boosts give coins back as XP
+    if (item.type === 'boost' || item.type === 'consumable') {
+        if (window.gameEngine) window.gameEngine.addXP(20);
+    }
+
+    GameUtils.saveGameState();
+    if (window.gameEngine) window.gameEngine.updatePlayerStats();
+    openShop(); // refresh
+    if (window.gameEngine) window.gameEngine.showNotification(`Purchased ${item.name}!`, 'success');
+    app.playSound('success');
+}
+
+// ========================================
+// TYPING CHALLENGE MINI-GAME
+// ========================================
+
+let typingState = {
+    challenge: null,
+    startTime: null,
+    timer: null,
+    elapsed: 0,
+    finished: false,
+    correctChars: 0,
+    totalTyped: 0,
+    combo: 0
+};
+
+function openTypingChallenge() {
+    document.getElementById('typing-modal').classList.add('active');
+    document.getElementById('typing-result').style.display = 'none';
+    document.getElementById('typing-input').value = '';
+    document.getElementById('typing-input').disabled = true;
+    document.getElementById('best-wpm').textContent = GameData.player.typingBestWPM;
+    document.getElementById('combo-display').textContent = GameData.player.combo;
+    newTypingChallenge();
+}
+
+function closeTypingChallenge() {
+    if (typingState.timer) clearInterval(typingState.timer);
+    document.getElementById('typing-modal').classList.remove('active');
+}
+
+function newTypingChallenge() {
+    if (typingState.timer) clearInterval(typingState.timer);
+    const challenges = GameData.typingChallenges;
+    typingState.challenge = challenges[Math.floor(Math.random() * challenges.length)];
+    typingState.finished = false;
+    typingState.startTime = null;
+    typingState.elapsed = 0;
+    typingState.correctChars = 0;
+    typingState.totalTyped = 0;
+    typingState.combo = 0;
+
+    const prompt = document.getElementById('typing-prompt');
+    prompt.innerHTML = typingState.challenge.code.split('').map(c =>
+        `<span class="char">${c === '\n' ? '↵\n' : (c === ' ' ? '·' : c)}</span>`
+    ).join('');
+
+    document.getElementById('typing-input').value = '';
+    document.getElementById('typing-input').disabled = true;
+    document.getElementById('typing-result').style.display = 'none';
+    document.getElementById('typing-timer').textContent = '0s';
+    document.getElementById('typing-wpm').textContent = '0';
+    document.getElementById('typing-accuracy').textContent = '100%';
+    document.getElementById('typing-combo').textContent = '0x';
+    document.getElementById('typing-start-btn').style.display = '';
+}
+
+function beginTyping() {
+    document.getElementById('typing-start-btn').style.display = 'none';
+    const input = document.getElementById('typing-input');
+    input.disabled = false;
+    input.focus();
+    typingState.startTime = Date.now();
+
+    typingState.timer = setInterval(() => {
+        typingState.elapsed = ((Date.now() - typingState.startTime) / 1000).toFixed(1);
+        document.getElementById('typing-timer').textContent = `${typingState.elapsed}s`;
+
+        // WPM calculation
+        const wordsTyped = typingState.correctChars / 5;
+        const minutes = typingState.elapsed / 60;
+        const wpm = minutes > 0 ? Math.round(wordsTyped / minutes) : 0;
+        document.getElementById('typing-wpm').textContent = wpm;
+    }, 100);
+
+    input.oninput = function () {
+        if (typingState.finished) return;
+        const typed = input.value;
+        const target = typingState.challenge.code;
+        const chars = document.querySelectorAll('#typing-prompt .char');
+        let correct = 0;
+        typingState.totalTyped = typed.length;
+
+        for (let i = 0; i < chars.length; i++) {
+            chars[i].className = 'char';
+            if (i < typed.length) {
+                if (typed[i] === target[i]) {
+                    chars[i].classList.add('char-correct');
+                    correct++;
+                } else {
+                    chars[i].classList.add('char-wrong');
+                }
+            }
+            if (i === typed.length) {
+                chars[i].classList.add('char-cursor');
+            }
+        }
+
+        typingState.correctChars = correct;
+        const accuracy = typingState.totalTyped > 0 ? Math.round((correct / typingState.totalTyped) * 100) : 100;
+        document.getElementById('typing-accuracy').textContent = `${accuracy}%`;
+
+        // Combo: consecutive correct chars
+        let combo = 0;
+        for (let i = typed.length - 1; i >= 0 && typed[i] === target[i]; i--) combo++;
+        typingState.combo = combo;
+        document.getElementById('typing-combo').textContent = `${combo}x`;
+
+        // Check completion
+        if (typed === target) {
+            finishTyping();
+        }
+    };
+}
+
+function finishTyping() {
+    typingState.finished = true;
+    clearInterval(typingState.timer);
+    document.getElementById('typing-input').disabled = true;
+
+    const elapsed = parseFloat(typingState.elapsed);
+    const wordsTyped = typingState.correctChars / 5;
+    const wpm = elapsed > 0 ? Math.round(wordsTyped / (elapsed / 60)) : 0;
+    const accuracy = typingState.totalTyped > 0 ? Math.round((typingState.correctChars / typingState.totalTyped) * 100) : 100;
+
+    // Rewards
+    const xpEarned = Math.round(wpm * 0.5 + accuracy * 0.2);
+    const coinsEarned = Math.round(wpm * 0.1);
+    if (window.gameEngine) window.gameEngine.addXP(xpEarned);
+    GameData.player.coins += coinsEarned;
+    if (wpm > GameData.player.typingBestWPM) GameData.player.typingBestWPM = wpm;
+
+    // Combo bonus
+    GameData.player.combo++;
+    if (GameData.player.combo > GameData.player.maxCombo) GameData.player.maxCombo = GameData.player.combo;
+    showComboIndicator(GameData.player.combo);
+
+    GameUtils.saveGameState();
+    if (window.gameEngine) window.gameEngine.updatePlayerStats();
+
+    const result = document.getElementById('typing-result');
+    result.style.display = 'block';
+    result.innerHTML = `
+        <h3>Challenge Complete! 🎉</h3>
+        <div class="result-stats">
+            <div class="result-stat"><strong>${wpm}</strong><span>WPM</span></div>
+            <div class="result-stat"><strong>${accuracy}%</strong><span>Accuracy</span></div>
+            <div class="result-stat"><strong>${elapsed}s</strong><span>Time</span></div>
+            <div class="result-stat"><strong>+${xpEarned}</strong><span>XP Earned</span></div>
+            <div class="result-stat"><strong>+${coinsEarned}</strong><span>Coins</span></div>
+        </div>
+    `;
+
+    document.getElementById('best-wpm').textContent = GameData.player.typingBestWPM;
+    document.getElementById('combo-display').textContent = GameData.player.combo;
+    app.playSound('success');
+}
+
+// ========================================
+// COMBO INDICATOR
+// ========================================
+
+function showComboIndicator(combo) {
+    const existing = document.querySelector('.combo-indicator');
+    if (existing) existing.remove();
+
+    if (combo < 2) return;
+
+    const el = document.createElement('div');
+    el.className = 'combo-indicator';
+    if (combo >= 10) el.classList.add('blaze');
+    else if (combo >= 5) el.classList.add('fire');
+    el.textContent = `🔥 ${combo}x Combo!`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2000);
+}
+
+// ========================================
+// TIMED QUIZ
+// ========================================
+
+let timedQuizState = {
+    questions: [],
+    current: 0,
+    score: 0,
+    combo: 0,
+    maxCombo: 0,
+    timer: null,
+    timeLeft: 0,
+    totalTime: 15,
+    active: false
+};
+
+const quizQuestionBank = [
+    { q: 'What keyword declares a block-scoped variable?', opts: ['var', 'let', 'const', 'def'], correct: 1 },
+    { q: 'Which method converts JSON string to object?', opts: ['JSON.stringify()', 'JSON.parse()', 'JSON.convert()', 'JSON.decode()'], correct: 1 },
+    { q: 'What does === check?', opts: ['Value only', 'Type only', 'Value and type', 'Reference'], correct: 2 },
+    { q: 'Which is NOT a primitive type?', opts: ['string', 'number', 'object', 'boolean'], correct: 2 },
+    { q: 'What does Array.map() return?', opts: ['undefined', 'A new array', 'The same array', 'A boolean'], correct: 1 },
+    { q: 'Which event fires when DOM is ready?', opts: ['onload', 'DOMContentLoaded', 'onready', 'DOMReady'], correct: 1 },
+    { q: 'What is typeof null?', opts: ['"null"', '"undefined"', '"object"', '"boolean"'], correct: 2 },
+    { q: 'Which method adds element to end of array?', opts: ['unshift()', 'push()', 'pop()', 'shift()'], correct: 1 },
+    { q: 'What does "use strict" do?', opts: ['Enables ES6', 'Enforces stricter parsing', 'Disables console', 'Enables TypeScript'], correct: 1 },
+    { q: 'Arrow functions have their own "this"?', opts: ['Yes', 'No', 'Only in classes', 'Only in modules'], correct: 1 },
+    { q: 'Which operator spreads an array?', opts: ['...', '***', '>>>', '<<<'], correct: 0 },
+    { q: 'What does Promise.all() do?', opts: ['Runs first promise', 'Waits for all promises', 'Cancels promises', 'Chains promises'], correct: 1 },
+    { q: 'How to create a class in JS?', opts: ['class {}', 'new Class()', 'function Class()', 'define class'], correct: 0 },
+    { q: 'Which loop is best for async iteration?', opts: ['for', 'while', 'for...of with await', 'forEach'], correct: 2 },
+    { q: 'What is NaN === NaN?', opts: ['true', 'false', 'undefined', 'Error'], correct: 1 }
+];
+
+function startTimedQuiz() {
+    // Pick 10 random questions
+    const shuffled = [...quizQuestionBank].sort(() => Math.random() - 0.5);
+    timedQuizState.questions = shuffled.slice(0, 10);
+    timedQuizState.current = 0;
+    timedQuizState.score = 0;
+    timedQuizState.combo = 0;
+    timedQuizState.maxCombo = 0;
+    timedQuizState.active = true;
+
+    document.getElementById('tq-result').style.display = 'none';
+    document.getElementById('tq-question-area').style.display = '';
+    document.getElementById('timed-quiz-modal').classList.add('active');
+
+    showTimedQuestion();
+}
+
+function showTimedQuestion() {
+    if (timedQuizState.current >= timedQuizState.questions.length) {
+        endTimedQuiz();
+        return;
+    }
+
+    const q = timedQuizState.questions[timedQuizState.current];
+    document.getElementById('tq-score').textContent = timedQuizState.score;
+    document.getElementById('tq-combo').textContent = timedQuizState.combo;
+    document.getElementById('tq-qnum').textContent = timedQuizState.current + 1;
+
+    const area = document.getElementById('tq-question-area');
+    area.innerHTML = `
+        <div class="tq-question">
+            <p>Q${timedQuizState.current + 1}: ${q.q}</p>
+            <div class="tq-options">
+                ${q.opts.map((opt, i) => `<button class="tq-option" onclick="answerTimedQuiz(${i})">${opt}</button>`).join('')}
+            </div>
+        </div>
+    `;
+
+    // Start timer
+    timedQuizState.timeLeft = timedQuizState.totalTime;
+    const fill = document.getElementById('quiz-timer-fill');
+    fill.style.width = '100%';
+    fill.classList.remove('danger');
+
+    if (timedQuizState.timer) clearInterval(timedQuizState.timer);
+    timedQuizState.timer = setInterval(() => {
+        timedQuizState.timeLeft -= 0.1;
+        const pct = Math.max(0, (timedQuizState.timeLeft / timedQuizState.totalTime) * 100);
+        fill.style.width = `${pct}%`;
+        if (pct < 30) fill.classList.add('danger');
+
+        if (timedQuizState.timeLeft <= 0) {
+            clearInterval(timedQuizState.timer);
+            answerTimedQuiz(-1); // timeout
+        }
+    }, 100);
+}
+
+function answerTimedQuiz(selected) {
+    if (!timedQuizState.active) return;
+    clearInterval(timedQuizState.timer);
+
+    const q = timedQuizState.questions[timedQuizState.current];
+    const buttons = document.querySelectorAll('.tq-option');
+    buttons.forEach((btn, i) => {
+        btn.disabled = true;
+        if (i === q.correct) btn.classList.add('correct');
+        if (i === selected && i !== q.correct) btn.classList.add('wrong');
+    });
+
+    if (selected === q.correct) {
+        timedQuizState.combo++;
+        if (timedQuizState.combo > timedQuizState.maxCombo) timedQuizState.maxCombo = timedQuizState.combo;
+        const multiplier = Math.min(1 + timedQuizState.combo * 0.2, 3);
+        const timeBonus = Math.round(timedQuizState.timeLeft);
+        const points = Math.round((10 + timeBonus) * multiplier);
+        timedQuizState.score += points;
+        app.playSound('success');
+    } else {
+        timedQuizState.combo = 0;
+        app.playSound('error');
+    }
+
+    timedQuizState.current++;
+    setTimeout(() => showTimedQuestion(), 800);
+}
+
+function endTimedQuiz() {
+    timedQuizState.active = false;
+    clearInterval(timedQuizState.timer);
+
+    const xpEarned = Math.round(timedQuizState.score * 0.5);
+    const coinsEarned = Math.round(timedQuizState.score * 0.1);
+
+    if (window.gameEngine) window.gameEngine.addXP(xpEarned);
+    GameData.player.coins += coinsEarned;
+    GameData.player.problemsSolved += timedQuizState.questions.length;
+    GameUtils.saveGameState();
+    if (window.gameEngine) window.gameEngine.updatePlayerStats();
+
+    document.getElementById('tq-question-area').style.display = 'none';
+    const result = document.getElementById('tq-result');
+    result.style.display = 'block';
+    result.innerHTML = `
+        <h3>Quiz Complete! 🏆</h3>
+        <div class="tq-result-stats">
+            <div class="tq-result-stat"><strong>${timedQuizState.score}</strong><span>Score</span></div>
+            <div class="tq-result-stat"><strong>${timedQuizState.maxCombo}x</strong><span>Best Combo</span></div>
+            <div class="tq-result-stat"><strong>+${xpEarned}</strong><span>XP Earned</span></div>
+            <div class="tq-result-stat"><strong>+${coinsEarned}</strong><span>Coins</span></div>
+        </div>
+        <button class="btn-primary" style="margin-top:1rem;" onclick="startTimedQuiz()">
+            <i class="fas fa-redo"></i> Play Again
+        </button>
+    `;
+
+    app.launchConfetti();
+}
+
+// ========================================
+// DAILY LOGIN REWARDS
+// ========================================
+
+function checkDailyLogin() {
+    const result = GameUtils.processDailyLogin();
+    if (result) {
+        showLoginRewardModal(result);
+    }
+}
+
+function showLoginRewardModal(result) {
+    const calendar = document.getElementById('login-calendar');
+    const display = document.getElementById('login-reward-display');
+
+    const totalLogins = GameData.player.loginDays.length;
+    const currentCycleDay = (totalLogins - 1) % 7;
+
+    let html = '';
+    GameData.loginRewards.forEach((reward, i) => {
+        const claimed = i <= currentCycleDay;
+        const isToday = i === currentCycleDay;
+        html += `
+            <div class="login-day ${claimed ? 'claimed' : ''} ${isToday ? 'today' : ''}">
+                <i class="${reward.icon}"></i>
+                <span>Day ${i + 1}</span>
+                <span style="font-weight:700;font-size:0.7rem;">${reward.reward} ${reward.currency === 'coins' ? '🪙' : '💎'}</span>
+            </div>
+        `;
+    });
+    calendar.innerHTML = html;
+
+    const r = result.reward;
+    display.innerHTML = `
+        <i class="${r.icon}"></i>
+        You received <strong>${r.reward} ${r.currency}</strong>!
+        <br><span style="font-size:0.85rem;color:var(--text-secondary);">Come back tomorrow for more rewards!</span>
+    `;
+
+    document.getElementById('login-reward-modal').classList.add('active');
+    app.playSound('success');
+}
+
+// ========================================
+// ACHIEVEMENT TOAST (enhanced)
+// ========================================
+
+function showAchievementToast(achievement) {
+    const existing = document.querySelector('.achievement-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'achievement-toast';
+    toast.innerHTML = `
+        <i class="${achievement.icon} toast-icon"></i>
+        <div class="toast-text">
+            <span class="toast-title">🏆 ${achievement.title}</span>
+            <span class="toast-desc">${achievement.description} — +${achievement.xpReward} XP</span>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    app.playSound('success');
+    app.launchConfetti();
+    setTimeout(() => {
+        toast.style.transition = 'opacity 0.5s';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 500);
+    }, 4000);
+}
+
+// ========================================
+// INIT: Check daily login on load
+// ========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => checkDailyLogin(), 1500);
+});
+
 console.log('🎮 JavaScript Quest App Loaded!');

@@ -32,6 +32,9 @@
                     <button class="nav-btn" data-view="profile" onclick="showProfile()">
                         <i class="fas fa-user"></i><span class="nav-label">Profile</span>
                     </button>
+                    <button class="nav-btn nav-btn-icon" onclick="openShop()" title="Shop">
+                        <i class="fas fa-store"></i>
+                    </button>
                     <button class="nav-btn nav-btn-icon" onclick="toggleSettings()" title="Settings">
                         <i class="fas fa-cog"></i>
                     </button>
@@ -52,6 +55,14 @@
                     <div class="stat" title="Points">
                         <i class="fas fa-trophy"></i>
                         <span id="player-points">0 Points</span>
+                    </div>
+                    <div class="stat currency-stat" title="Coins">
+                        <i class="fas fa-coins coin-icon"></i>
+                        <span id="player-coins">50</span>
+                    </div>
+                    <div class="stat currency-stat" title="Gems">
+                        <i class="fas fa-gem gem-icon"></i>
+                        <span id="player-gems">5</span>
                     </div>
                 </div>
             </div>
@@ -163,6 +174,39 @@
                             </div>
                             <button class="btn-secondary" onclick="showAllAchievements()">
                                 View All <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Typing Challenge -->
+                    <div class="card typing-challenge-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-keyboard"></i> Code Typing Challenge</h3>
+                        </div>
+                        <div class="card-content">
+                            <p>Type JavaScript code as fast as you can!</p>
+                            <div class="typing-stats-mini">
+                                <span><i class="fas fa-tachometer-alt"></i> Best: <strong id="best-wpm">0</strong> WPM</span>
+                                <span><i class="fas fa-fire"></i> Combo: <strong id="combo-display">0</strong>x</span>
+                            </div>
+                            <button class="btn-primary" onclick="openTypingChallenge()">
+                                Start Typing <i class="fas fa-play"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Timed Quiz -->
+                    <div class="card timed-quiz-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-stopwatch"></i> Speed Quiz</h3>
+                        </div>
+                        <div class="card-content">
+                            <p>Answer questions before time runs out for bonus XP!</p>
+                            <div class="typing-stats-mini">
+                                <span><i class="fas fa-bolt"></i> Multiplier: up to <strong>3x</strong> XP</span>
+                            </div>
+                            <button class="btn-secondary" onclick="startTimedQuiz()">
+                                Start Quiz <i class="fas fa-bolt"></i>
                             </button>
                         </div>
                     </div>
@@ -547,6 +591,84 @@
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Login Reward Modal -->
+    <div id="login-reward-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-gift"></i> Daily Login Reward!</h2>
+                <button class="close-btn" onclick="closeModal('login-reward-modal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="login-calendar" id="login-calendar"></div>
+                <div class="login-reward-display" id="login-reward-display"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shop Modal -->
+    <div id="shop-modal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2><i class="fas fa-store"></i> Shop</h2>
+                <div class="shop-wallet">
+                    <span><i class="fas fa-coins coin-icon"></i> <span id="shop-coins">0</span></span>
+                    <span><i class="fas fa-gem gem-icon"></i> <span id="shop-gems">0</span></span>
+                </div>
+                <button class="close-btn" onclick="closeModal('shop-modal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="shop-grid" id="shop-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Typing Challenge Modal -->
+    <div id="typing-modal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2><i class="fas fa-keyboard"></i> Code Typing Challenge</h2>
+                <button class="close-btn" onclick="closeTypingChallenge()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="typing-hud">
+                    <div class="typing-stat"><span class="typing-stat-label">Time</span><span class="typing-stat-value" id="typing-timer">0s</span></div>
+                    <div class="typing-stat"><span class="typing-stat-label">WPM</span><span class="typing-stat-value" id="typing-wpm">0</span></div>
+                    <div class="typing-stat"><span class="typing-stat-label">Accuracy</span><span class="typing-stat-value" id="typing-accuracy">100%</span></div>
+                    <div class="typing-stat"><span class="typing-stat-label">Combo</span><span class="typing-stat-value" id="typing-combo">0x</span></div>
+                </div>
+                <div class="typing-prompt" id="typing-prompt"></div>
+                <textarea class="typing-input" id="typing-input" placeholder="Start typing here..." autocomplete="off" autocorrect="off" spellcheck="false"></textarea>
+                <div class="typing-actions">
+                    <button class="btn-secondary" onclick="newTypingChallenge()"><i class="fas fa-redo"></i> New Challenge</button>
+                    <button class="btn-primary" id="typing-start-btn" onclick="beginTyping()"><i class="fas fa-play"></i> Start</button>
+                </div>
+                <div class="typing-result" id="typing-result" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timed Quiz Modal -->
+    <div id="timed-quiz-modal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2><i class="fas fa-stopwatch"></i> Speed Quiz</h2>
+                <button class="close-btn" onclick="closeModal('timed-quiz-modal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="quiz-timer-bar">
+                    <div class="quiz-timer-fill" id="quiz-timer-fill"></div>
+                </div>
+                <div class="timed-quiz-hud">
+                    <span>Score: <strong id="tq-score">0</strong></span>
+                    <span>Combo: <strong id="tq-combo">0</strong>x</span>
+                    <span>Question: <strong id="tq-qnum">0</strong>/10</span>
+                </div>
+                <div id="tq-question-area"></div>
+                <div class="timed-quiz-result" id="tq-result" style="display:none;"></div>
             </div>
         </div>
     </div>

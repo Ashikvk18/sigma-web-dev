@@ -12,13 +12,23 @@ const GameData = {
         points: 0,
         totalXp: 0,
         streak: 0,
+        combo: 0,
+        maxCombo: 0,
+        coins: 50,
+        gems: 5,
         timeSpent: 0,
         lessonsCompleted: 0,
         problemsSolved: 0,
         achievements: [],
         currentLesson: null,
         unlockedLessons: ['variables', 'operators'],
-        completedLessons: ['variables', 'operators']
+        completedLessons: ['variables', 'operators'],
+        loginDays: [],
+        lastLoginDate: null,
+        typingBestWPM: 0,
+        quizHighScores: {},
+        ownedCosmetics: ['title-beginner'],
+        equippedTitle: 'title-beginner'
     },
 
     // Level system
@@ -488,6 +498,43 @@ const GameData = {
         }
     ],
 
+    // Shop items
+    shopItems: [
+        { id: 'title-hacker', name: '"Hacker" Title', desc: 'Show off your elite status', type: 'title', cost: 200, currency: 'coins', icon: 'fas fa-terminal' },
+        { id: 'title-ninja', name: '"Code Ninja" Title', desc: 'Silent but deadly coder', type: 'title', cost: 300, currency: 'coins', icon: 'fas fa-user-ninja' },
+        { id: 'title-wizard', name: '"JS Wizard" Title', desc: 'Master of JavaScript magic', type: 'title', cost: 500, currency: 'coins', icon: 'fas fa-hat-wizard' },
+        { id: 'title-legend', name: '"Legend" Title', desc: 'A true JavaScript legend', type: 'title', cost: 10, currency: 'gems', icon: 'fas fa-crown' },
+        { id: 'boost-2x', name: '2x XP Boost (1hr)', desc: 'Double XP for one hour', type: 'boost', cost: 150, currency: 'coins', icon: 'fas fa-bolt' },
+        { id: 'boost-streak', name: 'Streak Shield', desc: 'Protect your streak for one day', type: 'boost', cost: 5, currency: 'gems', icon: 'fas fa-shield-alt' },
+        { id: 'hint-pack', name: 'Hint Pack (5)', desc: 'Get 5 quiz hints', type: 'consumable', cost: 100, currency: 'coins', icon: 'fas fa-lightbulb' },
+        { id: 'theme-neon', name: 'Neon Theme', desc: 'Unlock the neon color theme', type: 'theme', cost: 15, currency: 'gems', icon: 'fas fa-palette' }
+    ],
+
+    // Typing challenge snippets
+    typingChallenges: [
+        { id: 'tc1', label: 'Hello World', code: 'console.log("Hello, World!");' },
+        { id: 'tc2', label: 'Variable Declaration', code: 'let name = "JavaScript";\nconst version = 2025;' },
+        { id: 'tc3', label: 'Arrow Function', code: 'const add = (a, b) => a + b;' },
+        { id: 'tc4', label: 'Array Map', code: 'const doubled = nums.map(n => n * 2);' },
+        { id: 'tc5', label: 'Object Destructure', code: 'const { name, age } = person;' },
+        { id: 'tc6', label: 'Async Fetch', code: 'const res = await fetch(url);\nconst data = await res.json();' },
+        { id: 'tc7', label: 'For Loop', code: 'for (let i = 0; i < arr.length; i++) {\n  console.log(arr[i]);\n}' },
+        { id: 'tc8', label: 'Ternary Operator', code: 'const status = age >= 18 ? "adult" : "minor";' },
+        { id: 'tc9', label: 'Template Literal', code: 'const msg = `Hello ${name}, you are ${age}!`;' },
+        { id: 'tc10', label: 'Promise Chain', code: 'fetch(url)\n  .then(res => res.json())\n  .then(data => console.log(data));' }
+    ],
+
+    // Daily login rewards (7-day cycle)
+    loginRewards: [
+        { day: 1, reward: 10,  currency: 'coins', icon: 'fas fa-coins' },
+        { day: 2, reward: 15,  currency: 'coins', icon: 'fas fa-coins' },
+        { day: 3, reward: 20,  currency: 'coins', icon: 'fas fa-coins' },
+        { day: 4, reward: 1,   currency: 'gems',  icon: 'fas fa-gem' },
+        { day: 5, reward: 30,  currency: 'coins', icon: 'fas fa-coins' },
+        { day: 6, reward: 2,   currency: 'gems',  icon: 'fas fa-gem' },
+        { day: 7, reward: 50,  currency: 'coins', icon: 'fas fa-gift' }
+    ],
+
     // Leaderboard (mock data)
     leaderboard: [
         { rank: 1, name: 'CodeMaster', xp: 2450, avatar: 'fas fa-user-ninja' },
@@ -787,6 +834,36 @@ const GameUtils = {
         const totalLessons = Object.keys(GameData.lessons).length;
         const completedLessons = GameData.player.completedLessons.length;
         return Math.round((completedLessons / totalLessons) * 100);
+    },
+
+    // Get combo multiplier (1x base, +0.1x per combo, max 3x)
+    getComboMultiplier() {
+        return Math.min(1 + GameData.player.combo * 0.1, 3);
+    },
+
+    // Check and process daily login
+    processDailyLogin() {
+        const today = new Date().toDateString();
+        if (GameData.player.lastLoginDate === today) return null; // already logged in today
+
+        GameData.player.lastLoginDate = today;
+        if (!GameData.player.loginDays.includes(today)) {
+            GameData.player.loginDays.push(today);
+        }
+
+        // Determine which reward day (cycle 1-7)
+        const dayIndex = (GameData.player.loginDays.length - 1) % 7;
+        const reward = GameData.loginRewards[dayIndex];
+
+        // Grant reward
+        if (reward.currency === 'coins') {
+            GameData.player.coins += reward.reward;
+        } else {
+            GameData.player.gems += reward.reward;
+        }
+
+        this.saveGameState();
+        return { dayIndex, reward };
     }
 };
 
