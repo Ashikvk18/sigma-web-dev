@@ -51,6 +51,11 @@ class GameEngine {
             targetView.classList.add('active');
             this.currentView = viewId;
             
+            // Update nav active state
+            document.querySelectorAll('.nav-btn[data-view]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.view === viewId);
+            });
+            
             // Update view-specific content
             switch (viewId) {
                 case 'dashboard':
@@ -80,6 +85,36 @@ class GameEngine {
         document.getElementById('player-level').textContent = `Level ${level.level}`;
         document.getElementById('player-xp').textContent = `${player.xp} XP`;
         document.getElementById('player-points').textContent = `${player.points} Points`;
+        
+        // Update streak
+        const streakEl = document.getElementById('player-streak');
+        if (streakEl) streakEl.textContent = player.streak;
+        const streakStat = document.getElementById('streak-stat');
+        if (streakStat) streakStat.classList.toggle('active-streak', player.streak > 0);
+        
+        // Update XP bar
+        this.updateXPBar();
+    }
+
+    updateXPBar() {
+        const player = GameData.player;
+        const currentLevel = GameUtils.calculateLevel(player.xp);
+        const nextLevel = GameData.levels.find(l => l.level === currentLevel.level + 1);
+        
+        const fill = document.getElementById('xp-bar-fill');
+        const text = document.getElementById('xp-bar-text');
+        if (!fill || !text) return;
+        
+        if (nextLevel) {
+            const xpIntoLevel = player.xp - currentLevel.xpRequired;
+            const xpNeeded = nextLevel.xpRequired - currentLevel.xpRequired;
+            const pct = Math.min((xpIntoLevel / xpNeeded) * 100, 100);
+            fill.style.width = `${pct}%`;
+            text.textContent = `${xpIntoLevel} / ${xpNeeded} XP to Level ${nextLevel.level}`;
+        } else {
+            fill.style.width = '100%';
+            text.textContent = 'MAX LEVEL';
+        }
     }
 
     addXP(amount) {
@@ -113,6 +148,31 @@ class GameEngine {
         this.updateDailyChallenge();
         this.updateRecentAchievements();
         this.updateLeaderboard();
+        this.updateStatsRibbon();
+        this.updateWelcomeMessage();
+    }
+
+    updateStatsRibbon() {
+        const player = GameData.player;
+        const el = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+        el('ribbon-streak', player.streak);
+        el('ribbon-lessons', player.lessonsCompleted);
+        el('ribbon-time', GameUtils.formatTime(Math.floor(player.timeSpent)));
+        el('ribbon-progress', GameUtils.getOverallProgress() + '%');
+    }
+
+    updateWelcomeMessage() {
+        const hours = new Date().getHours();
+        let greeting = hours < 12 ? 'Good morning' : hours < 18 ? 'Good afternoon' : 'Good evening';
+        const titleEl = document.getElementById('welcome-title');
+        const subEl = document.getElementById('welcome-subtitle');
+        if (titleEl) titleEl.textContent = `${greeting}, ${GameData.player.name}! 🚀`;
+        if (subEl) {
+            const progress = GameUtils.getOverallProgress();
+            subEl.textContent = progress > 0 
+                ? `You're ${progress}% through your JavaScript journey` 
+                : 'Start your JavaScript adventure today';
+        }
     }
 
     updateCurrentQuest() {
@@ -252,13 +312,23 @@ class GameEngine {
 
     updateProfile() {
         const player = GameData.player;
+        const level = GameUtils.calculateLevel(player.xp);
         
         // Update player info
         const playerInfo = document.querySelector('.player-info');
         if (playerInfo) {
             playerInfo.querySelector('h2').textContent = player.name;
-            playerInfo.querySelector('p').textContent = `Level ${GameUtils.calculateLevel(player.xp).level} • ${player.xp} XP • ${player.points} Points`;
+            playerInfo.querySelector('p').textContent = `Level ${level.level} • ${player.xp} XP • ${player.points} Points`;
         }
+        
+        // Update badges
+        const levelBadge = document.getElementById('level-badge');
+        if (levelBadge) levelBadge.innerHTML = `<i class="fas fa-star"></i> ${level.title}`;
+        const streakBadge = document.getElementById('streak-badge');
+        if (streakBadge) streakBadge.innerHTML = `<i class="fas fa-fire"></i> ${player.streak} Day Streak`;
+        
+        // Update progress ring
+        this.updateProfileRing();
         
         // Update stats
         this.updateProfileStats();
@@ -268,6 +338,16 @@ class GameEngine {
         
         // Update progress chart
         this.updateProgressChart();
+    }
+
+    updateProfileRing() {
+        const ring = document.getElementById('profile-ring');
+        if (!ring) return;
+        const progress = GameUtils.getOverallProgress();
+        const circumference = 2 * Math.PI * 52; // r=52
+        const offset = circumference - (progress / 100) * circumference;
+        ring.style.strokeDasharray = circumference;
+        ring.style.strokeDashoffset = offset;
     }
 
     updateProfileStats() {
@@ -873,8 +953,24 @@ class GameEngine {
     }
 
     showAllAchievements() {
-        // Show all achievements modal
-        console.log('Showing all achievements...');
+        const grid = document.getElementById('all-achievements-grid');
+        if (!grid) return;
+        
+        let html = '';
+        GameData.achievements.forEach(achievement => {
+            const isEarned = GameData.player.achievements.includes(achievement.id);
+            html += `
+                <div class="achievement ${isEarned ? 'earned' : ''}">
+                    <i class="${isEarned ? achievement.icon : 'fas fa-lock'}"></i>
+                    <span class="achievement-title">${achievement.title}</span>
+                    <span class="achievement-desc">${achievement.description}</span>
+                    ${isEarned ? `<span class="text-success" style="font-size:0.75rem;">+${achievement.xpReward} XP</span>` : ''}
+                </div>
+            `;
+        });
+        
+        grid.innerHTML = html;
+        document.getElementById('all-achievements-modal').classList.add('active');
     }
 
     showDashboard() {
