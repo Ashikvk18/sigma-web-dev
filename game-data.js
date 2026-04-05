@@ -535,6 +535,22 @@ const GameData = {
         { day: 7, reward: 50,  currency: 'coins', icon: 'fas fa-gift' }
     ],
 
+    // Flashcards for JS concepts
+    flashcards: [
+        { front: 'What is a closure?', back: 'A function that remembers the variables from its outer scope even after the outer function has returned.', category: 'functions' },
+        { front: 'What is hoisting?', back: 'JavaScript moves variable and function declarations to the top of their scope before execution. var is hoisted (as undefined), let/const are not accessible before declaration.', category: 'basics' },
+        { front: 'Difference between == and ===', back: '== checks value with type coercion. === checks value AND type without coercion. Always prefer ===.', category: 'basics' },
+        { front: 'What is the event loop?', back: 'The mechanism that allows JS to perform non-blocking operations by offloading tasks to the browser, then processing callbacks from the queue when the call stack is empty.', category: 'async' },
+        { front: 'What does Array.reduce() do?', back: 'Executes a reducer function on each array element, accumulating a single return value. Syntax: arr.reduce((acc, cur) => acc + cur, initialValue)', category: 'arrays' },
+        { front: 'What is prototypal inheritance?', back: 'Objects can inherit properties and methods from other objects through the prototype chain. Every object has a [[Prototype]] linking to another object.', category: 'objects' },
+        { front: 'What is a Promise?', back: 'An object representing the eventual completion or failure of an async operation. States: pending, fulfilled, rejected. Use .then(), .catch(), or async/await.', category: 'async' },
+        { front: 'let vs const vs var', back: 'var: function-scoped, hoisted. let: block-scoped, reassignable. const: block-scoped, cannot be reassigned (but objects/arrays can be mutated).', category: 'basics' },
+        { front: 'What is destructuring?', back: 'Syntax to unpack values from arrays or properties from objects into variables. const { name } = obj; const [a, b] = arr;', category: 'basics' },
+        { front: 'What is the spread operator?', back: '... spreads elements of an iterable. Used to copy arrays/objects, merge them, or pass array elements as function arguments.', category: 'basics' },
+        { front: 'What is debouncing?', back: 'A technique that delays function execution until after a wait period has elapsed since the last call. Useful for search inputs, resize handlers.', category: 'performance' },
+        { front: 'What is the DOM?', back: 'Document Object Model — a tree-structured API that represents HTML as objects. JavaScript uses it to read, modify, add, or delete HTML elements and attributes.', category: 'dom' }
+    ],
+
     // Bug challenges for Find the Bug mini-game
     bugChallenges: [
         {

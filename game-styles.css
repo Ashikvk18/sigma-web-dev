@@ -2449,6 +2449,105 @@ body {
    RESPONSIVE ADDITIONS
    ======================================== */
 /* ========================================
+   FLASHCARDS
+   ======================================== */
+.fc-progress {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+.fc-category {
+    background: rgba(102, 126, 234, 0.15);
+    color: var(--primary-color);
+    padding: 0.2rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.fc-card-wrapper {
+    perspective: 800px;
+    cursor: pointer;
+    margin-bottom: 0.75rem;
+}
+.fc-card {
+    width: 100%;
+    min-height: 200px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease;
+}
+.fc-card.flipped {
+    transform: rotateY(180deg);
+}
+.fc-front, .fc-back {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 14px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+.fc-front {
+    background: var(--gradient-primary);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+.fc-back {
+    background: var(--glass);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    transform: rotateY(180deg);
+    font-size: 0.95rem;
+}
+.fc-hint {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+}
+.fc-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.6rem;
+}
+.fc-know-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    background: var(--gradient-success);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+.fc-know-btn:hover { transform: scale(1.05); }
+.fc-unsure-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    background: var(--gradient-warning);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+.fc-unsure-btn:hover { transform: scale(1.05); }
+
+/* ========================================
    FIND THE BUG
    ======================================== */
 .bug-title {

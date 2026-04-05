@@ -855,6 +855,86 @@ function showAchievementToast(achievement) {
 }
 
 // ========================================
+// FLASHCARDS
+// ========================================
+
+let fcIndex = 0;
+let fcDeck = [];
+let fcReviewed = 0;
+
+function openFlashcards() {
+    fcDeck = [...GameData.flashcards].sort(() => Math.random() - 0.5);
+    fcIndex = 0;
+    fcReviewed = 0;
+    document.getElementById('flashcard-modal').classList.add('active');
+    showFlashcard();
+}
+
+function showFlashcard() {
+    const card = fcDeck[fcIndex];
+    if (!card) return;
+    document.getElementById('fc-front').textContent = card.front;
+    document.getElementById('fc-back').textContent = card.back;
+    document.getElementById('fc-card').classList.remove('flipped');
+    document.getElementById('fc-counter').textContent = `${fcIndex + 1} / ${fcDeck.length}`;
+    document.getElementById('fc-category').textContent = card.category;
+}
+
+function flipFlashcard() {
+    document.getElementById('fc-card').classList.toggle('flipped');
+}
+
+function nextFlashcard() {
+    if (fcIndex < fcDeck.length - 1) {
+        fcIndex++;
+        showFlashcard();
+    }
+}
+
+function prevFlashcard() {
+    if (fcIndex > 0) {
+        fcIndex--;
+        showFlashcard();
+    }
+}
+
+function markFlashcard(type) {
+    fcReviewed++;
+    document.getElementById('fc-reviewed-count').textContent = fcReviewed;
+
+    if (type === 'know') {
+        // Remove from deck (won't see again this session)
+        fcDeck.splice(fcIndex, 1);
+        if (fcIndex >= fcDeck.length) fcIndex = Math.max(0, fcDeck.length - 1);
+
+        GameData.player.coins += 2;
+        if (window.gameEngine) {
+            window.gameEngine.addXP(3);
+            window.gameEngine.updatePlayerStats();
+        }
+        GameUtils.saveGameState();
+    } else {
+        // Move to end of deck for review later
+        const card = fcDeck.splice(fcIndex, 1)[0];
+        fcDeck.push(card);
+        if (fcIndex >= fcDeck.length) fcIndex = 0;
+    }
+
+    if (fcDeck.length === 0) {
+        // All cards known!
+        document.getElementById('fc-front').textContent = '🎉 All cards reviewed!';
+        document.getElementById('fc-back').textContent = 'Great job studying!';
+        document.getElementById('fc-card').classList.remove('flipped');
+        document.getElementById('fc-counter').textContent = 'Done!';
+        if (window.gameEngine) window.gameEngine.addXP(10);
+        app.playSound('success');
+        return;
+    }
+
+    showFlashcard();
+}
+
+// ========================================
 // FIND THE BUG MINI-GAME
 // ========================================
 
