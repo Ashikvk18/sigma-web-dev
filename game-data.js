@@ -556,42 +556,50 @@ const GameData = {
         {
             id: 'bug1', title: 'Variable Scope',
             lines: ['function greet() {', '  let msg = "Hi";', '}', 'console.log(msg);'],
-            bugLine: 3, explanation: '"msg" is declared with let inside the function — it\'s not accessible outside. Move the declaration or use a return value.'
+            bugLine: 3, hint: 'Think about where "let" variables are accessible.',
+            explanation: '"msg" is declared with let inside the function — it\'s not accessible outside. Move the declaration or use a return value.'
         },
         {
             id: 'bug2', title: 'Off-by-one',
             lines: ['const arr = [1, 2, 3];', 'for (let i = 0; i <= arr.length; i++) {', '  console.log(arr[i]);', '}'],
-            bugLine: 1, explanation: 'Using <= instead of < causes an extra iteration where arr[3] is undefined.'
+            bugLine: 1, hint: 'Check the loop boundary condition carefully.',
+            explanation: 'Using <= instead of < causes an extra iteration where arr[3] is undefined.'
         },
         {
             id: 'bug3', title: 'Strict Equality',
             lines: ['const age = "18";', 'if (age == 18) {', '  console.log("Adult");', '}'],
-            bugLine: 1, explanation: 'Using == instead of === allows type coercion. "18" == 18 is true but it\'s a common source of bugs. Use === for strict comparison.'
+            bugLine: 1, hint: 'Look at the comparison operator and the variable type.',
+            explanation: 'Using == instead of === allows type coercion. "18" == 18 is true but it\'s a common source of bugs. Use === for strict comparison.'
         },
         {
             id: 'bug4', title: 'Missing Return',
             lines: ['function double(n) {', '  n * 2;', '}', 'const result = double(5);'],
-            bugLine: 1, explanation: 'Missing "return" keyword. The function executes n * 2 but doesn\'t return it, so result is undefined.'
+            bugLine: 1, hint: 'The function calculates something but does it give it back?',
+            explanation: 'Missing "return" keyword. The function executes n * 2 but doesn\'t return it, so result is undefined.'
         },
         {
             id: 'bug5', title: 'Async Mistake',
             lines: ['async function getData() {', '  const res = fetch("/api");', '  const data = res.json();', '  return data;', '}'],
-            bugLine: 1, explanation: 'Missing "await" before fetch(). Without await, res is a Promise, not the response object.'
+            bugLine: 1, hint: 'This is an async function — is it waiting for the async operation?',
+            explanation: 'Missing "await" before fetch(). Without await, res is a Promise, not the response object.'
         },
         {
             id: 'bug6', title: 'Array Mutation',
             lines: ['const nums = [3, 1, 2];', 'const sorted = nums.sort();', 'console.log(nums);', '// Expected: [3, 1, 2]'],
-            bugLine: 1, explanation: 'Array.sort() mutates the original array. Use [...nums].sort() to avoid changing the original.'
+            bugLine: 1, hint: 'Does .sort() create a new array or change the existing one?',
+            explanation: 'Array.sort() mutates the original array. Use [...nums].sort() to avoid changing the original.'
         },
         {
             id: 'bug7', title: 'Callback Trap',
             lines: ['for (var i = 0; i < 3; i++) {', '  setTimeout(() => {', '    console.log(i);', '  }, 100);', '}'],
-            bugLine: 0, explanation: 'Using "var" in a loop with setTimeout prints 3 three times because var is function-scoped. Use "let" instead.'
+            bugLine: 0, hint: 'Pay attention to the variable declaration keyword in the loop.',
+            explanation: 'Using "var" in a loop with setTimeout prints 3 three times because var is function-scoped. Use "let" instead.'
         },
         {
             id: 'bug8', title: 'Object Reference',
             lines: ['const user = { name: "Alice" };', 'const copy = user;', 'copy.name = "Bob";', 'console.log(user.name);'],
-            bugLine: 1, explanation: 'Objects are assigned by reference. "copy" points to the same object. Use { ...user } for a shallow copy.'
+            bugLine: 1, hint: 'How are objects assigned in JavaScript — by value or reference?',
+            explanation: 'Objects are assigned by reference. "copy" points to the same object. Use { ...user } for a shallow copy.'
         }
     ],
 

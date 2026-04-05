@@ -648,21 +648,21 @@ let timedQuizState = {
 };
 
 const quizQuestionBank = [
-    { q: 'What keyword declares a block-scoped variable?', opts: ['var', 'let', 'const', 'def'], correct: 1 },
-    { q: 'Which method converts JSON string to object?', opts: ['JSON.stringify()', 'JSON.parse()', 'JSON.convert()', 'JSON.decode()'], correct: 1 },
-    { q: 'What does === check?', opts: ['Value only', 'Type only', 'Value and type', 'Reference'], correct: 2 },
-    { q: 'Which is NOT a primitive type?', opts: ['string', 'number', 'object', 'boolean'], correct: 2 },
-    { q: 'What does Array.map() return?', opts: ['undefined', 'A new array', 'The same array', 'A boolean'], correct: 1 },
-    { q: 'Which event fires when DOM is ready?', opts: ['onload', 'DOMContentLoaded', 'onready', 'DOMReady'], correct: 1 },
-    { q: 'What is typeof null?', opts: ['"null"', '"undefined"', '"object"', '"boolean"'], correct: 2 },
-    { q: 'Which method adds element to end of array?', opts: ['unshift()', 'push()', 'pop()', 'shift()'], correct: 1 },
-    { q: 'What does "use strict" do?', opts: ['Enables ES6', 'Enforces stricter parsing', 'Disables console', 'Enables TypeScript'], correct: 1 },
-    { q: 'Arrow functions have their own "this"?', opts: ['Yes', 'No', 'Only in classes', 'Only in modules'], correct: 1 },
-    { q: 'Which operator spreads an array?', opts: ['...', '***', '>>>', '<<<'], correct: 0 },
-    { q: 'What does Promise.all() do?', opts: ['Runs first promise', 'Waits for all promises', 'Cancels promises', 'Chains promises'], correct: 1 },
-    { q: 'How to create a class in JS?', opts: ['class {}', 'new Class()', 'function Class()', 'define class'], correct: 0 },
-    { q: 'Which loop is best for async iteration?', opts: ['for', 'while', 'for...of with await', 'forEach'], correct: 2 },
-    { q: 'What is NaN === NaN?', opts: ['true', 'false', 'undefined', 'Error'], correct: 1 }
+    { q: 'What keyword declares a block-scoped variable?', opts: ['var', 'let', 'const', 'def'], correct: 1, hint: 'It was introduced in ES6 and is reassignable.' },
+    { q: 'Which method converts JSON string to object?', opts: ['JSON.stringify()', 'JSON.parse()', 'JSON.convert()', 'JSON.decode()'], correct: 1, hint: 'Think about "parsing" text into data.' },
+    { q: 'What does === check?', opts: ['Value only', 'Type only', 'Value and type', 'Reference'], correct: 2, hint: 'It\'s the "strict" equality operator.' },
+    { q: 'Which is NOT a primitive type?', opts: ['string', 'number', 'object', 'boolean'], correct: 2, hint: 'Primitives are simple, single values.' },
+    { q: 'What does Array.map() return?', opts: ['undefined', 'A new array', 'The same array', 'A boolean'], correct: 1, hint: 'It transforms each element and collects results.' },
+    { q: 'Which event fires when DOM is ready?', opts: ['onload', 'DOMContentLoaded', 'onready', 'DOMReady'], correct: 1, hint: 'It fires when HTML is parsed, before images load.' },
+    { q: 'What is typeof null?', opts: ['"null"', '"undefined"', '"object"', '"boolean"'], correct: 2, hint: 'This is a famous JavaScript quirk/bug.' },
+    { q: 'Which method adds element to end of array?', opts: ['unshift()', 'push()', 'pop()', 'shift()'], correct: 1, hint: 'Think of pushing something onto a stack.' },
+    { q: 'What does "use strict" do?', opts: ['Enables ES6', 'Enforces stricter parsing', 'Disables console', 'Enables TypeScript'], correct: 1, hint: 'It catches common coding mistakes.' },
+    { q: 'Arrow functions have their own "this"?', opts: ['Yes', 'No', 'Only in classes', 'Only in modules'], correct: 1, hint: 'Arrow functions inherit "this" from their parent.' },
+    { q: 'Which operator spreads an array?', opts: ['...', '***', '>>>', '<<<'], correct: 0, hint: 'It looks like three dots.' },
+    { q: 'What does Promise.all() do?', opts: ['Runs first promise', 'Waits for all promises', 'Cancels promises', 'Chains promises'], correct: 1, hint: 'The word "all" is a big clue.' },
+    { q: 'How to create a class in JS?', opts: ['class {}', 'new Class()', 'function Class()', 'define class'], correct: 0, hint: 'ES6 introduced a dedicated keyword for this.' },
+    { q: 'Which loop is best for async iteration?', opts: ['for', 'while', 'for...of with await', 'forEach'], correct: 2, hint: 'forEach doesn\'t await inside its callback.' },
+    { q: 'What is NaN === NaN?', opts: ['true', 'false', 'undefined', 'Error'], correct: 1, hint: 'NaN is not equal to anything, even itself.' }
 ];
 
 function startTimedQuiz() {
@@ -697,6 +697,8 @@ function showTimedQuestion() {
     area.innerHTML = `
         <div class="tq-question">
             <p>Q${timedQuizState.current + 1}: ${q.q}</p>
+            <button class="hint-btn" onclick="useHint('quiz')"><i class="fas fa-lightbulb"></i> Hint (15 coins)</button>
+            <div class="hint-box" id="tq-hint" style="display:none;"></div>
             <div class="tq-options">
                 ${q.opts.map((opt, i) => `<button class="tq-option" onclick="answerTimedQuiz(${i})">${opt}</button>`).join('')}
             </div>
@@ -935,6 +937,48 @@ function markFlashcard(type) {
 }
 
 // ========================================
+// HINTS SYSTEM
+// ========================================
+
+const HINT_COST = 15;
+
+function useHint(mode) {
+    if (GameData.player.coins < HINT_COST) {
+        if (window.gameEngine) window.gameEngine.showNotification('Not enough coins! You need 15 coins for a hint.', 'warning');
+        return;
+    }
+
+    if (mode === 'quiz') {
+        const hintBox = document.getElementById('tq-hint');
+        if (!hintBox || hintBox.style.display !== 'none') return;
+        const q = timedQuizState.questions[timedQuizState.current];
+        if (!q || !q.hint) return;
+
+        GameData.player.coins -= HINT_COST;
+        if (window.gameEngine) window.gameEngine.updatePlayerStats();
+        GameUtils.saveGameState();
+
+        hintBox.innerHTML = `<i class="fas fa-lightbulb"></i> ${q.hint}`;
+        hintBox.style.display = 'block';
+    } else if (mode === 'bug') {
+        const hintBox = document.getElementById('bug-hint-box');
+        if (!hintBox || hintBox.style.display !== 'none') return;
+        if (!currentBug || !currentBug.hint || bugAnswered) return;
+
+        GameData.player.coins -= HINT_COST;
+        if (window.gameEngine) window.gameEngine.updatePlayerStats();
+        GameUtils.saveGameState();
+
+        hintBox.innerHTML = `<i class="fas fa-lightbulb"></i> ${currentBug.hint}`;
+        hintBox.style.display = 'block';
+    }
+
+    // Hide the hint button after use
+    const btn = document.querySelector(mode === 'quiz' ? '.tq-question .hint-btn' : '#bug-hint-btn');
+    if (btn) btn.style.display = 'none';
+}
+
+// ========================================
 // FIND THE BUG MINI-GAME
 // ========================================
 
@@ -962,6 +1006,30 @@ function loadNewBug() {
             <span class="line-code">${line}</span>
         </div>`
     ).join('');
+
+    // Reset hint area
+    const hintBox = document.getElementById('bug-feedback');
+    hintBox.style.display = 'none';
+    hintBox.className = 'bug-feedback';
+
+    // Insert hint button after code area
+    const existingHintBtn = document.getElementById('bug-hint-btn');
+    if (existingHintBtn) existingHintBtn.remove();
+    const existingHintBox = document.getElementById('bug-hint-box');
+    if (existingHintBox) existingHintBox.remove();
+
+    const hintBtn = document.createElement('button');
+    hintBtn.id = 'bug-hint-btn';
+    hintBtn.className = 'hint-btn';
+    hintBtn.innerHTML = '<i class="fas fa-lightbulb"></i> Hint (15 coins)';
+    hintBtn.onclick = () => useHint('bug');
+    codeArea.parentNode.insertBefore(hintBtn, codeArea.nextSibling);
+
+    const hintDisplay = document.createElement('div');
+    hintDisplay.id = 'bug-hint-box';
+    hintDisplay.className = 'hint-box';
+    hintDisplay.style.display = 'none';
+    hintBtn.parentNode.insertBefore(hintDisplay, hintBtn.nextSibling);
 }
 
 function pickBugLine(lineIndex) {
