@@ -2585,6 +2585,76 @@ body *, body *::before, body *::after {
 .fc-unsure-btn:hover { transform: scale(1.05); }
 
 /* ========================================
+   INTELLISENSE
+   ======================================== */
+.intellisense-wrap {
+    position: relative;
+}
+.intellisense-dropdown {
+    position: absolute;
+    left: 0;
+    z-index: 3000;
+    background: var(--card-bg-solid);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.45);
+    max-height: 200px;
+    overflow-y: auto;
+    min-width: 240px;
+    display: none;
+}
+.intellisense-dropdown.visible {
+    display: block;
+    animation: isenseSlide 0.15s ease-out;
+}
+@keyframes isenseSlide {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.isense-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 0.75rem;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--text-primary);
+    transition: background 0.1s;
+}
+.isense-item:hover, .isense-item.active {
+    background: rgba(228, 0, 43, 0.1);
+}
+.isense-item.active {
+    border-left: 2px solid var(--primary-color);
+}
+.isense-badge {
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+}
+.isense-badge.keyword { background: rgba(228,0,43,0.15); color: var(--primary-color); }
+.isense-badge.method { background: rgba(212,175,55,0.15); color: #d4af37; }
+.isense-badge.property { background: rgba(16,185,129,0.15); color: var(--success-color); }
+.isense-badge.snippet { background: rgba(160,160,160,0.15); color: var(--text-secondary); }
+.isense-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.isense-detail {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    margin-left: auto;
+    white-space: nowrap;
+}
+
+/* ========================================
    JS CHEATSHEET PANEL
    ======================================== */
 .cheatsheet-panel {

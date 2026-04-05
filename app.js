@@ -1276,6 +1276,242 @@ function importProgress(event) {
 }
 
 // ========================================
+// INTELLISENSE AUTOCOMPLETE
+// ========================================
+
+const isenseDictionary = [
+    // Keywords
+    { name: 'const', type: 'keyword', detail: 'block-scoped constant' },
+    { name: 'let', type: 'keyword', detail: 'block-scoped variable' },
+    { name: 'var', type: 'keyword', detail: 'function-scoped variable' },
+    { name: 'function', type: 'keyword', detail: 'declare function' },
+    { name: 'return', type: 'keyword', detail: 'return value' },
+    { name: 'if', type: 'keyword', detail: 'conditional' },
+    { name: 'else', type: 'keyword', detail: 'alternate branch' },
+    { name: 'for', type: 'keyword', detail: 'loop' },
+    { name: 'while', type: 'keyword', detail: 'loop' },
+    { name: 'switch', type: 'keyword', detail: 'multi-branch' },
+    { name: 'case', type: 'keyword', detail: 'switch case' },
+    { name: 'break', type: 'keyword', detail: 'exit loop/switch' },
+    { name: 'continue', type: 'keyword', detail: 'skip iteration' },
+    { name: 'class', type: 'keyword', detail: 'define class' },
+    { name: 'extends', type: 'keyword', detail: 'class inheritance' },
+    { name: 'new', type: 'keyword', detail: 'create instance' },
+    { name: 'this', type: 'keyword', detail: 'current context' },
+    { name: 'async', type: 'keyword', detail: 'async function' },
+    { name: 'await', type: 'keyword', detail: 'wait for promise' },
+    { name: 'try', type: 'keyword', detail: 'error handling' },
+    { name: 'catch', type: 'keyword', detail: 'handle error' },
+    { name: 'finally', type: 'keyword', detail: 'always execute' },
+    { name: 'throw', type: 'keyword', detail: 'throw error' },
+    { name: 'import', type: 'keyword', detail: 'import module' },
+    { name: 'export', type: 'keyword', detail: 'export module' },
+    { name: 'typeof', type: 'keyword', detail: 'check type' },
+    { name: 'instanceof', type: 'keyword', detail: 'check instance' },
+    { name: 'true', type: 'keyword', detail: 'boolean' },
+    { name: 'false', type: 'keyword', detail: 'boolean' },
+    { name: 'null', type: 'keyword', detail: 'empty value' },
+    { name: 'undefined', type: 'keyword', detail: 'no value' },
+    // Methods
+    { name: 'console.log()', type: 'method', detail: 'print to console' },
+    { name: 'console.error()', type: 'method', detail: 'log error' },
+    { name: 'console.warn()', type: 'method', detail: 'log warning' },
+    { name: 'parseInt()', type: 'method', detail: 'string to int' },
+    { name: 'parseFloat()', type: 'method', detail: 'string to float' },
+    { name: 'JSON.parse()', type: 'method', detail: 'string to object' },
+    { name: 'JSON.stringify()', type: 'method', detail: 'object to string' },
+    { name: 'setTimeout()', type: 'method', detail: 'delay execution' },
+    { name: 'setInterval()', type: 'method', detail: 'repeat execution' },
+    { name: 'fetch()', type: 'method', detail: 'HTTP request' },
+    { name: 'Promise.all()', type: 'method', detail: 'wait all promises' },
+    { name: 'Promise.resolve()', type: 'method', detail: 'resolved promise' },
+    { name: 'Math.random()', type: 'method', detail: '0-1 random number' },
+    { name: 'Math.floor()', type: 'method', detail: 'round down' },
+    { name: 'Math.ceil()', type: 'method', detail: 'round up' },
+    { name: 'Math.max()', type: 'method', detail: 'largest value' },
+    { name: 'Math.min()', type: 'method', detail: 'smallest value' },
+    { name: 'Array.isArray()', type: 'method', detail: 'check if array' },
+    { name: 'Object.keys()', type: 'method', detail: 'get object keys' },
+    { name: 'Object.values()', type: 'method', detail: 'get object values' },
+    { name: 'Object.entries()', type: 'method', detail: 'key-value pairs' },
+    { name: 'Object.assign()', type: 'method', detail: 'merge objects' },
+    // Properties / Array methods
+    { name: '.length', type: 'property', detail: 'array/string length' },
+    { name: '.push()', type: 'method', detail: 'add to end' },
+    { name: '.pop()', type: 'method', detail: 'remove from end' },
+    { name: '.shift()', type: 'method', detail: 'remove from start' },
+    { name: '.unshift()', type: 'method', detail: 'add to start' },
+    { name: '.map()', type: 'method', detail: 'transform array' },
+    { name: '.filter()', type: 'method', detail: 'filter array' },
+    { name: '.reduce()', type: 'method', detail: 'reduce to value' },
+    { name: '.forEach()', type: 'method', detail: 'iterate array' },
+    { name: '.find()', type: 'method', detail: 'find element' },
+    { name: '.findIndex()', type: 'method', detail: 'find index' },
+    { name: '.includes()', type: 'method', detail: 'check contains' },
+    { name: '.indexOf()', type: 'method', detail: 'find position' },
+    { name: '.slice()', type: 'method', detail: 'extract portion' },
+    { name: '.splice()', type: 'method', detail: 'add/remove items' },
+    { name: '.sort()', type: 'method', detail: 'sort array' },
+    { name: '.reverse()', type: 'method', detail: 'reverse array' },
+    { name: '.join()', type: 'method', detail: 'array to string' },
+    { name: '.split()', type: 'method', detail: 'string to array' },
+    { name: '.trim()', type: 'method', detail: 'remove whitespace' },
+    { name: '.replace()', type: 'method', detail: 'replace text' },
+    { name: '.toUpperCase()', type: 'method', detail: 'to uppercase' },
+    { name: '.toLowerCase()', type: 'method', detail: 'to lowercase' },
+    { name: '.startsWith()', type: 'method', detail: 'check prefix' },
+    { name: '.endsWith()', type: 'method', detail: 'check suffix' },
+    { name: '.toString()', type: 'method', detail: 'convert to string' },
+    // DOM
+    { name: 'document.getElementById()', type: 'method', detail: 'get by id' },
+    { name: 'document.querySelector()', type: 'method', detail: 'CSS selector' },
+    { name: 'document.querySelectorAll()', type: 'method', detail: 'all matches' },
+    { name: 'document.createElement()', type: 'method', detail: 'create element' },
+    { name: '.addEventListener()', type: 'method', detail: 'attach event' },
+    { name: '.removeEventListener()', type: 'method', detail: 'remove event' },
+    { name: '.appendChild()', type: 'method', detail: 'append child' },
+    { name: '.classList.add()', type: 'method', detail: 'add class' },
+    { name: '.classList.remove()', type: 'method', detail: 'remove class' },
+    { name: '.classList.toggle()', type: 'method', detail: 'toggle class' },
+    { name: '.innerHTML', type: 'property', detail: 'HTML content' },
+    { name: '.textContent', type: 'property', detail: 'text content' },
+    { name: '.style', type: 'property', detail: 'inline styles' },
+    // Snippets
+    { name: 'for (let i = 0; i < ; i++)', type: 'snippet', detail: 'for loop' },
+    { name: 'for (const item of )', type: 'snippet', detail: 'for...of' },
+    { name: '() => {}', type: 'snippet', detail: 'arrow function' },
+    { name: 'async () => {}', type: 'snippet', detail: 'async arrow' },
+    { name: 'try { } catch (e) { }', type: 'snippet', detail: 'try/catch' },
+];
+
+let isenseActive = null; // { el, dropdown, activeIndex }
+
+function getWordAtCursor(el) {
+    const isInput = el.tagName === 'INPUT';
+    const val = el.value;
+    const pos = el.selectionStart;
+    const before = val.substring(0, pos);
+    const match = before.match(/[\w.]+$/);
+    return match ? match[0] : '';
+}
+
+function showIntelliSense(el, word) {
+    if (!word || word.length < 2) { hideIntelliSense(); return; }
+
+    const lower = word.toLowerCase();
+    const matches = isenseDictionary.filter(d =>
+        d.name.toLowerCase().includes(lower)
+    ).slice(0, 10);
+
+    if (matches.length === 0) { hideIntelliSense(); return; }
+
+    let dropdown = el.parentElement.querySelector('.intellisense-dropdown');
+    if (!dropdown) {
+        dropdown = document.createElement('div');
+        dropdown.className = 'intellisense-dropdown';
+        el.parentElement.style.position = 'relative';
+        el.parentElement.appendChild(dropdown);
+    }
+
+    dropdown.innerHTML = matches.map((m, i) =>
+        `<div class="isense-item${i === 0 ? ' active' : ''}" data-index="${i}" data-name="${m.name}">
+            <span class="isense-badge ${m.type}">${m.type.slice(0, 3)}</span>
+            <span class="isense-name">${m.name}</span>
+            <span class="isense-detail">${m.detail}</span>
+        </div>`
+    ).join('');
+
+    dropdown.classList.add('visible');
+    // Position below cursor
+    const isTextarea = el.tagName === 'TEXTAREA';
+    dropdown.style.top = (el.offsetTop + el.offsetHeight + 2) + 'px';
+    dropdown.style.left = el.offsetLeft + 'px';
+
+    isenseActive = { el, dropdown, activeIndex: 0, matches, word };
+
+    // Click to select
+    dropdown.querySelectorAll('.isense-item').forEach(item => {
+        item.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            acceptSuggestion(item.dataset.name);
+        });
+    });
+}
+
+function hideIntelliSense() {
+    if (isenseActive && isenseActive.dropdown) {
+        isenseActive.dropdown.classList.remove('visible');
+    }
+    isenseActive = null;
+}
+
+function acceptSuggestion(name) {
+    if (!isenseActive) return;
+    const el = isenseActive.el;
+    const word = isenseActive.word;
+    const pos = el.selectionStart;
+    const val = el.value;
+    const before = val.substring(0, pos - word.length);
+    const after = val.substring(pos);
+    el.value = before + name + after;
+    const newPos = before.length + name.length;
+    el.selectionStart = el.selectionEnd = newPos;
+    el.focus();
+    hideIntelliSense();
+}
+
+function navigateIsense(dir) {
+    if (!isenseActive) return;
+    const items = isenseActive.dropdown.querySelectorAll('.isense-item');
+    items[isenseActive.activeIndex]?.classList.remove('active');
+    isenseActive.activeIndex = (isenseActive.activeIndex + dir + items.length) % items.length;
+    items[isenseActive.activeIndex]?.classList.add('active');
+    items[isenseActive.activeIndex]?.scrollIntoView({ block: 'nearest' });
+}
+
+function attachIntelliSense(el) {
+    if (!el || el.dataset.isenseAttached) return;
+    el.dataset.isenseAttached = 'true';
+
+    el.addEventListener('input', () => {
+        const word = getWordAtCursor(el);
+        showIntelliSense(el, word);
+    });
+
+    el.addEventListener('keydown', (e) => {
+        if (!isenseActive) return;
+        if (e.key === 'ArrowDown') { e.preventDefault(); navigateIsense(1); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); navigateIsense(-1); }
+        else if (e.key === 'Tab' || e.key === 'Enter') {
+            if (isenseActive.dropdown.classList.contains('visible')) {
+                e.preventDefault();
+                const active = isenseActive.matches[isenseActive.activeIndex];
+                if (active) acceptSuggestion(active.name);
+            }
+        }
+        else if (e.key === 'Escape') { hideIntelliSense(); }
+    });
+
+    el.addEventListener('blur', () => setTimeout(hideIntelliSense, 150));
+}
+
+// Auto-attach to code inputs when they appear
+function initIntelliSense() {
+    const selectors = ['#code-editor-area', '#typing-input', '#codefix-input'];
+    selectors.forEach(sel => {
+        const el = document.querySelector(sel);
+        if (el) attachIntelliSense(el);
+    });
+}
+
+// Observe DOM for dynamically created code editors (lesson content loads later)
+const isenseObserver = new MutationObserver(() => initIntelliSense());
+isenseObserver.observe(document.body, { childList: true, subtree: true });
+
+// Also init on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => setTimeout(initIntelliSense, 500));
+
+// ========================================
 // JS CHEATSHEET
 // ========================================
 
