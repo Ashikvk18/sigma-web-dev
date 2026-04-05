@@ -129,6 +129,11 @@ class GameEngine {
             this.showLevelUp(newLevel);
         }
         
+        // Show XP popup
+        if (window.app && amount > 0) {
+            window.app.showXPPopup(amount);
+        }
+        
         this.updatePlayerStats();
         GameUtils.saveGameState();
     }
@@ -885,6 +890,9 @@ class GameEngine {
         
         modal.classList.add('active');
         
+        // Launch confetti!
+        if (window.app) window.app.launchConfetti();
+        
         // Auto-close after 3 seconds
         setTimeout(() => {
             modal.classList.remove('active');
@@ -896,6 +904,8 @@ class GameEngine {
 
     showLessonComplete(lesson) {
         this.showNotification(`🎉 Lesson completed: ${lesson.title}! +${lesson.xpReward} XP`, 'success');
+        // Launch confetti on lesson complete!
+        if (window.app) window.app.launchConfetti();
     }
 
     showWelcomeMessage() {
