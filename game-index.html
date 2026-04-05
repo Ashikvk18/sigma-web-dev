@@ -35,6 +35,9 @@
                     <button class="nav-btn nav-btn-icon" onclick="openShop()" title="Shop">
                         <i class="fas fa-store"></i>
                     </button>
+                    <button class="nav-btn nav-btn-icon" onclick="toggleCheatsheet()" title="JS Cheatsheet">
+                        <i class="fas fa-code"></i>
+                    </button>
                     <button class="nav-btn nav-btn-icon notif-bell" onclick="toggleNotifCenter()" title="Notifications">
                         <i class="fas fa-bell"></i>
                         <span class="notif-badge" id="notif-badge" style="display:none;">0</span>
@@ -716,6 +719,64 @@
                 <div class="bug-actions">
                     <button class="btn-secondary" onclick="loadNewCodeFix()"><i class="fas fa-redo"></i> Next Challenge</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS Cheatsheet Panel -->
+    <div id="cheatsheet-panel" class="cheatsheet-panel">
+        <div class="cheatsheet-header">
+            <h3><i class="fas fa-code"></i> JS Cheatsheet</h3>
+            <button class="close-btn" onclick="toggleCheatsheet()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="cheatsheet-body">
+            <div class="cheat-section">
+                <h4>Variables</h4>
+                <code>let x = 5;</code>
+                <code>const PI = 3.14;</code>
+                <code>var old = "avoid";</code>
+            </div>
+            <div class="cheat-section">
+                <h4>Functions</h4>
+                <code>function greet(n) { return "Hi " + n; }</code>
+                <code>const add = (a, b) => a + b;</code>
+            </div>
+            <div class="cheat-section">
+                <h4>Arrays</h4>
+                <code>arr.push(item)</code>
+                <code>arr.map(x => x * 2)</code>
+                <code>arr.filter(x => x > 3)</code>
+                <code>arr.reduce((a, c) => a + c, 0)</code>
+            </div>
+            <div class="cheat-section">
+                <h4>Objects</h4>
+                <code>const { name, age } = person;</code>
+                <code>const copy = { ...obj };</code>
+                <code>Object.keys(obj)</code>
+            </div>
+            <div class="cheat-section">
+                <h4>Async</h4>
+                <code>const res = await fetch(url);</code>
+                <code>const data = await res.json();</code>
+                <code>Promise.all([p1, p2])</code>
+            </div>
+            <div class="cheat-section">
+                <h4>DOM</h4>
+                <code>document.querySelector('.cls')</code>
+                <code>el.addEventListener('click', fn)</code>
+                <code>el.classList.toggle('active')</code>
+            </div>
+            <div class="cheat-section">
+                <h4>Loops</h4>
+                <code>for (let i = 0; i < n; i++) {}</code>
+                <code>for (const item of arr) {}</code>
+                <code>arr.forEach(item => {})</code>
+            </div>
+            <div class="cheat-section">
+                <h4>Strings</h4>
+                <code>`Hello ${name}!`</code>
+                <code>str.includes("text")</code>
+                <code>str.split(", ")</code>
             </div>
         </div>
     </div>

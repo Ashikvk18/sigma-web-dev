@@ -1276,6 +1276,14 @@ function importProgress(event) {
 }
 
 // ========================================
+// JS CHEATSHEET
+// ========================================
+
+function toggleCheatsheet() {
+    document.getElementById('cheatsheet-panel').classList.toggle('open');
+}
+
+// ========================================
 // WEEKLY XP GOAL
 // ========================================
 
