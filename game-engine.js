@@ -931,6 +931,11 @@ class GameEngine {
         
         document.getElementById('new-level').textContent = newLevel.level;
         
+        // Award skill points on level up
+        GameData.player.skillPoints = (GameData.player.skillPoints || 0) + 2;
+        GameUtils.saveGameState();
+        this.showNotification('+2 Skill Points earned! Open the Skill Tree to spend them.', 'success');
+        
         modal.classList.add('active');
         
         // Launch confetti!

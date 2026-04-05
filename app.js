@@ -1276,6 +1276,94 @@ function importProgress(event) {
 }
 
 // ========================================
+// SKILL TREE
+// ========================================
+
+function openSkillTree() {
+    document.getElementById('skill-tree-modal').classList.add('active');
+    renderSkillTree();
+}
+
+function renderSkillTree() {
+    const container = document.getElementById('skill-tree-container');
+    const unlocked = GameData.player.unlockedSkills || ['core-1'];
+    const tree = GameData.skillTree;
+
+    document.getElementById('skill-points-count').textContent = GameData.player.skillPoints || 0;
+
+    const branches = {
+        core: { label: 'Core Fundamentals', icon: 'fas fa-star' },
+        frontend: { label: 'Frontend Path', icon: 'fas fa-desktop' },
+        backend: { label: 'Backend Path', icon: 'fas fa-server' },
+        fullstack: { label: 'Fullstack Path', icon: 'fas fa-layer-group' }
+    };
+
+    let html = '';
+    for (const [branchId, branchInfo] of Object.entries(branches)) {
+        const nodes = tree.filter(n => n.branch === branchId);
+        if (nodes.length === 0) continue;
+
+        html += `<div class="skill-branch">
+            <div class="skill-branch-label ${branchId}"><i class="${branchInfo.icon}"></i> ${branchInfo.label}</div>
+            <div class="skill-nodes">`;
+
+        nodes.forEach((node, i) => {
+            const isUnlocked = unlocked.includes(node.id);
+            const prereqMet = !node.requires || unlocked.includes(node.requires);
+            const isAvailable = !isUnlocked && prereqMet;
+            const state = isUnlocked ? 'unlocked' : isAvailable ? 'available' : 'locked';
+
+            if (i > 0) {
+                const prevUnlocked = unlocked.includes(nodes[i - 1].id);
+                html += `<div class="skill-connector${prevUnlocked ? ' active' : ''}"></div>`;
+            }
+
+            html += `<div class="skill-node ${state}" onclick="unlockSkill('${node.id}')" title="${node.desc}">
+                ${isUnlocked ? '<div class="skill-node-check"><i class="fas fa-check"></i></div>' : ''}
+                <i class="skill-node-icon ${node.icon}"></i>
+                <div class="skill-node-name">${node.name}</div>
+                <div class="skill-node-desc">${node.desc}</div>
+                <div class="skill-node-cost">${isUnlocked ? 'Unlocked' : node.cost + ' SP'}</div>
+            </div>`;
+        });
+
+        html += `</div></div>`;
+    }
+
+    container.innerHTML = html;
+}
+
+function unlockSkill(skillId) {
+    const tree = GameData.skillTree;
+    const node = tree.find(n => n.id === skillId);
+    if (!node) return;
+
+    const unlocked = GameData.player.unlockedSkills || ['core-1'];
+    if (unlocked.includes(skillId)) return;
+
+    // Check prerequisite
+    if (node.requires && !unlocked.includes(node.requires)) {
+        if (window.gameEngine) window.gameEngine.showNotification('Unlock the prerequisite skill first!', 'warning');
+        return;
+    }
+
+    // Check skill points
+    if ((GameData.player.skillPoints || 0) < node.cost) {
+        if (window.gameEngine) window.gameEngine.showNotification(`Not enough skill points! Need ${node.cost} SP.`, 'warning');
+        return;
+    }
+
+    GameData.player.skillPoints -= node.cost;
+    unlocked.push(skillId);
+    GameData.player.unlockedSkills = unlocked;
+    GameUtils.saveGameState();
+
+    if (window.gameEngine) window.gameEngine.showNotification(`Skill unlocked: ${node.name}!`, 'success');
+    app.playSound('success');
+    renderSkillTree();
+}
+
+// ========================================
 // INTELLISENSE AUTOCOMPLETE
 // ========================================
 

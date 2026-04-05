@@ -31,7 +31,9 @@ const GameData = {
         typingBestWPM: 0,
         quizHighScores: {},
         ownedCosmetics: ['title-beginner'],
-        equippedTitle: 'title-beginner'
+        equippedTitle: 'title-beginner',
+        skillPoints: 3,
+        unlockedSkills: ['core-1']
     },
 
     // Level system
@@ -650,6 +652,29 @@ const GameData = {
             fixedLine: 'const copy = [...original];',
             explanation: 'Use spread operator to create a shallow copy instead of a reference.'
         }
+    ],
+
+    // Skill Tree
+    skillTree: [
+        // Core (starting branch)
+        { id: 'core-1', name: 'JS Basics', desc: 'Variables, types, operators', cost: 0, requires: null, branch: 'core', icon: 'fas fa-seedling' },
+        { id: 'core-2', name: 'Control Flow', desc: 'If/else, loops, switch', cost: 1, requires: 'core-1', branch: 'core', icon: 'fas fa-code-branch' },
+        { id: 'core-3', name: 'Functions', desc: 'Declarations, arrows, scope', cost: 1, requires: 'core-2', branch: 'core', icon: 'fas fa-cube' },
+        // Frontend branch
+        { id: 'fe-1', name: 'DOM Basics', desc: 'Selectors, events, manipulation', cost: 2, requires: 'core-3', branch: 'frontend', icon: 'fas fa-window-maximize' },
+        { id: 'fe-2', name: 'CSS-in-JS', desc: 'Dynamic styles, classList', cost: 2, requires: 'fe-1', branch: 'frontend', icon: 'fas fa-palette' },
+        { id: 'fe-3', name: 'Animations', desc: 'RequestAnimationFrame, transitions', cost: 2, requires: 'fe-2', branch: 'frontend', icon: 'fas fa-film' },
+        { id: 'fe-4', name: 'React Basics', desc: 'Components, JSX, state', cost: 3, requires: 'fe-3', branch: 'frontend', icon: 'fab fa-react' },
+        // Backend branch
+        { id: 'be-1', name: 'Node.js', desc: 'Runtime, modules, npm', cost: 2, requires: 'core-3', branch: 'backend', icon: 'fab fa-node-js' },
+        { id: 'be-2', name: 'Express', desc: 'Routes, middleware, REST', cost: 2, requires: 'be-1', branch: 'backend', icon: 'fas fa-server' },
+        { id: 'be-3', name: 'Databases', desc: 'MongoDB, SQL basics', cost: 2, requires: 'be-2', branch: 'backend', icon: 'fas fa-database' },
+        { id: 'be-4', name: 'Auth & Security', desc: 'JWT, bcrypt, CORS', cost: 3, requires: 'be-3', branch: 'backend', icon: 'fas fa-shield-alt' },
+        // Fullstack branch
+        { id: 'fs-1', name: 'Async Mastery', desc: 'Promises, async/await, fetch', cost: 2, requires: 'core-3', branch: 'fullstack', icon: 'fas fa-sync-alt' },
+        { id: 'fs-2', name: 'API Design', desc: 'REST, GraphQL, WebSockets', cost: 2, requires: 'fs-1', branch: 'fullstack', icon: 'fas fa-plug' },
+        { id: 'fs-3', name: 'Testing', desc: 'Unit tests, Jest, TDD', cost: 2, requires: 'fs-2', branch: 'fullstack', icon: 'fas fa-vial' },
+        { id: 'fs-4', name: 'DevOps', desc: 'CI/CD, Docker, deployment', cost: 3, requires: 'fs-3', branch: 'fullstack', icon: 'fas fa-rocket' },
     ],
 
     // Leaderboard (mock data)
