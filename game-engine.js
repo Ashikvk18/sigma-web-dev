@@ -86,6 +86,12 @@ class GameEngine {
         document.getElementById('player-xp').textContent = `${player.xp} XP`;
         document.getElementById('player-points').textContent = `${player.points} Points`;
         
+        // Update coins & gems
+        const coinsEl = document.getElementById('player-coins');
+        if (coinsEl) coinsEl.textContent = player.coins;
+        const gemsEl = document.getElementById('player-gems');
+        if (gemsEl) gemsEl.textContent = player.gems;
+        
         // Update streak
         const streakEl = document.getElementById('player-streak');
         if (streakEl) streakEl.textContent = player.streak;
@@ -390,35 +396,60 @@ class GameEngine {
         if (!canvas) return;
         
         const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = canvas.offsetWidth * dpr;
+        canvas.height = 200 * dpr;
+        ctx.scale(dpr, dpr);
+        const W = canvas.offsetWidth;
+        const H = 200;
         
-        // Simple progress chart
-        const progress = GameUtils.getOverallProgress();
+        ctx.clearRect(0, 0, W, H);
         
-        // Clear canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Per-world progress bars
+        const worlds = ['basics', 'intermediate', 'advanced', 'master'];
+        const labels = ['Basics', 'Intermediate', 'Advanced', 'Master'];
+        const colors = ['#667eea', '#10b981', '#f59e0b', '#ef4444'];
+        const barH = 24;
+        const gap = 16;
+        const startY = 20;
+        const labelW = 100;
+        const barMaxW = W - labelW - 30;
         
-        // Draw progress bar
-        const barWidth = 300;
-        const barHeight = 30;
-        const x = (canvas.width - barWidth) / 2;
-        const y = (canvas.height - barHeight) / 2;
-        
-        // Background
-        ctx.fillStyle = '#2d3561';
-        ctx.fillRect(x, y, barWidth, barHeight);
-        
-        // Progress
-        const gradient = ctx.createLinearGradient(x, 0, x + barWidth, 0);
-        gradient.addColorStop(0, '#667eea');
-        gradient.addColorStop(1, '#764ba2');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(x, y, (barWidth * progress) / 100, barHeight);
-        
-        // Text
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '14px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(`${progress}% Complete`, canvas.width / 2, y + barHeight / 2 + 5);
+        worlds.forEach((world, i) => {
+            const lessons = GameUtils.getWorldLessons(world);
+            const completed = lessons.filter(l => GameUtils.isLessonCompleted(l.id)).length;
+            const pct = lessons.length > 0 ? completed / lessons.length : 0;
+            const y = startY + i * (barH + gap);
+            
+            // Label
+            ctx.fillStyle = '#94a1b2';
+            ctx.font = '13px Inter, sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText(labels[i], labelW - 10, y + barH / 2 + 4);
+            
+            // Background bar
+            ctx.fillStyle = 'rgba(102, 126, 234, 0.1)';
+            ctx.beginPath();
+            ctx.roundRect(labelW, y, barMaxW, barH, 6);
+            ctx.fill();
+            
+            // Progress fill
+            if (pct > 0) {
+                const grad = ctx.createLinearGradient(labelW, 0, labelW + barMaxW, 0);
+                grad.addColorStop(0, colors[i]);
+                grad.addColorStop(1, colors[i] + '88');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.roundRect(labelW, y, barMaxW * pct, barH, 6);
+                ctx.fill();
+            }
+            
+            // Percentage text
+            ctx.fillStyle = '#fffffe';
+            ctx.font = 'bold 12px Inter, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(`${Math.round(pct * 100)}%  (${completed}/${lessons.length})`, labelW + 8, y + barH / 2 + 4);
+        });
     }
 
     // ========================================
@@ -640,8 +671,10 @@ class GameEngine {
         if (allTopicsCompleted) {
             this.completeLesson();
         } else {
-            this.showNotification('Topic completed! +5 XP Keep going!', 'success');
+            this.showNotification('Topic completed! +5 XP +5 Coins 🪙', 'success');
             this.addXP(5);
+            GameData.player.coins += 5;
+            this.updatePlayerStats();
             this.nextTopic();
         }
         
@@ -662,6 +695,8 @@ class GameEngine {
         // Award rewards
         this.addXP(lesson.xpReward);
         this.addPoints(lesson.pointsReward);
+        GameData.player.coins += 25;
+        GameData.player.gems += 1;
         
         // Unlock next lesson
         const nextLesson = GameUtils.getNextLesson(lesson.id);
@@ -866,19 +901,17 @@ class GameEngine {
     }
 
     showAchievementUnlocked(achievement) {
-        const modal = document.getElementById('achievement-modal');
-        if (!modal) return;
-        
-        document.getElementById('achievement-title').textContent = achievement.title;
-        document.getElementById('achievement-desc').textContent = achievement.description;
-        
-        modal.classList.add('active');
-        
-        // Auto-close after 3 seconds
-        setTimeout(() => {
-            modal.classList.remove('active');
-        }, 3000);
-        
+        // Use new achievement toast if available
+        if (typeof showAchievementToast === 'function') {
+            showAchievementToast(achievement);
+        } else {
+            const modal = document.getElementById('achievement-modal');
+            if (!modal) return;
+            document.getElementById('achievement-title').textContent = achievement.title;
+            document.getElementById('achievement-desc').textContent = achievement.description;
+            modal.classList.add('active');
+            setTimeout(() => modal.classList.remove('active'), 3000);
+        }
         console.log(`🏆 Achievement unlocked: ${achievement.title}`);
     }
 

@@ -855,6 +855,70 @@ function showAchievementToast(achievement) {
 }
 
 // ========================================
+// FIND THE BUG MINI-GAME
+// ========================================
+
+let currentBug = null;
+let bugAnswered = false;
+
+function openBugChallenge() {
+    document.getElementById('bug-modal').classList.add('active');
+    document.getElementById('bugs-found').textContent = GameData.player.problemsSolved;
+    loadNewBug();
+}
+
+function loadNewBug() {
+    const challenges = GameData.bugChallenges;
+    currentBug = challenges[Math.floor(Math.random() * challenges.length)];
+    bugAnswered = false;
+
+    document.getElementById('bug-title').textContent = `🐛 Challenge: ${currentBug.title}`;
+    document.getElementById('bug-feedback').style.display = 'none';
+
+    const codeArea = document.getElementById('bug-code');
+    codeArea.innerHTML = currentBug.lines.map((line, i) =>
+        `<div class="bug-line" onclick="pickBugLine(${i})">
+            <span class="line-num">${i + 1}</span>
+            <span class="line-code">${line}</span>
+        </div>`
+    ).join('');
+}
+
+function pickBugLine(lineIndex) {
+    if (bugAnswered) return;
+    bugAnswered = true;
+
+    const lines = document.querySelectorAll('#bug-code .bug-line');
+    const feedback = document.getElementById('bug-feedback');
+    feedback.style.display = 'block';
+
+    if (lineIndex === currentBug.bugLine) {
+        lines[lineIndex].classList.add('correct-pick');
+        feedback.className = 'bug-feedback correct';
+        feedback.innerHTML = `<strong>✅ Correct!</strong> ${currentBug.explanation}`;
+
+        GameData.player.problemsSolved++;
+        GameData.player.coins += 10;
+        if (window.gameEngine) {
+            window.gameEngine.addXP(15);
+            window.gameEngine.updatePlayerStats();
+        }
+        GameUtils.saveGameState();
+        document.getElementById('bugs-found').textContent = GameData.player.problemsSolved;
+        app.playSound('success');
+    } else {
+        lines[lineIndex].classList.add('wrong-pick');
+        lines[currentBug.bugLine].classList.add('reveal-bug');
+        feedback.className = 'bug-feedback wrong';
+        feedback.innerHTML = `<strong>❌ Not quite.</strong> The bug is on line ${currentBug.bugLine + 1}. ${currentBug.explanation}`;
+        app.playSound('error');
+    }
+
+    // Disable further clicks
+    lines.forEach(l => l.style.pointerEvents = 'none');
+}
+
+// ========================================
 // INIT: Check daily login on load
 // ========================================
 

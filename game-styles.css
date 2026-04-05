@@ -2448,6 +2448,88 @@ body {
 /* ========================================
    RESPONSIVE ADDITIONS
    ======================================== */
+/* ========================================
+   FIND THE BUG
+   ======================================== */
+.bug-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+.bug-code {
+    background: var(--dark-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 0.5rem 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+}
+.bug-line {
+    display: flex;
+    align-items: center;
+    padding: 0.3rem 1rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-left: 3px solid transparent;
+}
+.bug-line:hover {
+    background: rgba(102, 126, 234, 0.08);
+    border-left-color: var(--primary-color);
+}
+.bug-line .line-num {
+    color: var(--text-secondary);
+    min-width: 30px;
+    text-align: right;
+    margin-right: 1rem;
+    font-size: 0.8rem;
+    user-select: none;
+}
+.bug-line .line-code {
+    white-space: pre;
+    color: var(--text-primary);
+}
+.bug-line.correct-pick {
+    background: rgba(16, 185, 129, 0.15);
+    border-left-color: var(--success-color);
+}
+.bug-line.correct-pick .line-code { color: var(--success-color); }
+.bug-line.wrong-pick {
+    background: rgba(239, 68, 68, 0.12);
+    border-left-color: var(--danger-color);
+}
+.bug-line.wrong-pick .line-code { color: var(--danger-color); }
+.bug-line.reveal-bug {
+    background: rgba(245, 158, 11, 0.12);
+    border-left-color: var(--warning-color);
+}
+
+.bug-feedback {
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+.bug-feedback.correct {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid var(--success-color);
+    color: var(--success-color);
+}
+.bug-feedback.wrong {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--danger-color);
+    color: var(--danger-color);
+}
+.bug-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
 @media (max-width: 768px) {
     .typing-hud { flex-wrap: wrap; }
     .typing-stat { min-width: 70px; padding: 0.4rem 0.7rem; }
