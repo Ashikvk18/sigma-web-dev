@@ -2556,6 +2556,125 @@ body {
 .fc-unsure-btn:hover { transform: scale(1.05); }
 
 /* ========================================
+   NOTIFICATION CENTER
+   ======================================== */
+.notif-bell {
+    position: relative;
+}
+.notif-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: var(--primary-color);
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 700;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.notif-center {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    width: 340px;
+    max-height: 420px;
+    background: var(--card-bg-solid);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    z-index: 2500;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    animation: notifSlide 0.2s ease-out;
+}
+.notif-center.open {
+    display: flex;
+}
+@keyframes notifSlide {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.notif-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+.notif-header h3 {
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.notif-clear-btn {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+.notif-clear-btn:hover {
+    background: rgba(228, 0, 43, 0.1);
+}
+.notif-list {
+    overflow-y: auto;
+    flex: 1;
+    max-height: 350px;
+}
+.notif-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.15s;
+}
+.notif-item:hover {
+    background: rgba(228, 0, 43, 0.05);
+}
+.notif-item-icon {
+    font-size: 1.1rem;
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+}
+.notif-item-icon.xp { color: var(--primary-color); }
+.notif-item-icon.coin { color: #d4af37; }
+.notif-item-icon.achievement { color: #f59e0b; }
+.notif-item-icon.info { color: var(--text-secondary); }
+.notif-item-icon.success { color: var(--success-color); }
+.notif-item-body {
+    flex: 1;
+    min-width: 0;
+}
+.notif-item-msg {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    line-height: 1.4;
+}
+.notif-item-time {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    margin-top: 0.15rem;
+}
+.notif-empty {
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* ========================================
    HINTS SYSTEM
    ======================================== */
 .hint-btn {

@@ -1067,6 +1067,92 @@ function pickBugLine(lineIndex) {
 }
 
 // ========================================
+// NOTIFICATION CENTER
+// ========================================
+
+let notifHistory = [];
+
+function toggleNotifCenter() {
+    const panel = document.getElementById('notif-center');
+    panel.classList.toggle('open');
+    if (panel.classList.contains('open')) {
+        const badge = document.getElementById('notif-badge');
+        badge.style.display = 'none';
+        badge.textContent = '0';
+    }
+}
+
+function pushNotification(message, type = 'info') {
+    const icons = {
+        success: 'fas fa-check-circle',
+        xp: 'fas fa-star',
+        coin: 'fas fa-coins',
+        achievement: 'fas fa-trophy',
+        warning: 'fas fa-exclamation-triangle',
+        error: 'fas fa-exclamation-circle',
+        info: 'fas fa-info-circle'
+    };
+
+    notifHistory.unshift({
+        message,
+        type,
+        icon: icons[type] || icons.info,
+        time: new Date()
+    });
+
+    // Keep max 50
+    if (notifHistory.length > 50) notifHistory.pop();
+
+    renderNotifications();
+
+    // Update badge if panel is closed
+    const panel = document.getElementById('notif-center');
+    if (!panel.classList.contains('open')) {
+        const badge = document.getElementById('notif-badge');
+        const count = parseInt(badge.textContent || '0') + 1;
+        badge.textContent = count > 9 ? '9+' : count;
+        badge.style.display = 'flex';
+    }
+}
+
+function renderNotifications() {
+    const list = document.getElementById('notif-list');
+    if (notifHistory.length === 0) {
+        list.innerHTML = '<div class="notif-empty">No notifications yet</div>';
+        return;
+    }
+
+    list.innerHTML = notifHistory.map(n => {
+        const ago = getTimeAgo(n.time);
+        return `<div class="notif-item">
+            <i class="notif-item-icon ${n.type} ${n.icon}"></i>
+            <div class="notif-item-body">
+                <div class="notif-item-msg">${n.message}</div>
+                <div class="notif-item-time">${ago}</div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function clearNotifications() {
+    notifHistory = [];
+    renderNotifications();
+    const badge = document.getElementById('notif-badge');
+    badge.style.display = 'none';
+    badge.textContent = '0';
+}
+
+function getTimeAgo(date) {
+    const s = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (s < 10) return 'Just now';
+    if (s < 60) return `${s}s ago`;
+    const m = Math.floor(s / 60);
+    if (m < 60) return `${m}m ago`;
+    const h = Math.floor(m / 60);
+    return `${h}h ago`;
+}
+
+// ========================================
 // EXPORT / IMPORT PROGRESS
 // ========================================
 

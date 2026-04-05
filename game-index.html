@@ -35,6 +35,10 @@
                     <button class="nav-btn nav-btn-icon" onclick="openShop()" title="Shop">
                         <i class="fas fa-store"></i>
                     </button>
+                    <button class="nav-btn nav-btn-icon notif-bell" onclick="toggleNotifCenter()" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notif-badge" id="notif-badge" style="display:none;">0</span>
+                    </button>
                     <button class="nav-btn nav-btn-icon" onclick="toggleSettings()" title="Settings">
                         <i class="fas fa-cog"></i>
                     </button>
@@ -638,6 +642,17 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Notification Center -->
+    <div id="notif-center" class="notif-center">
+        <div class="notif-header">
+            <h3><i class="fas fa-bell"></i> Notifications</h3>
+            <button class="notif-clear-btn" onclick="clearNotifications()">Clear All</button>
+        </div>
+        <div class="notif-list" id="notif-list">
+            <div class="notif-empty">No notifications yet</div>
         </div>
     </div>
 

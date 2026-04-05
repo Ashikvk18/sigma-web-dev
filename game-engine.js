@@ -888,6 +888,11 @@ class GameEngine {
             notification.classList.remove('show');
             setTimeout(() => notification.remove(), 300);
         }, 3000);
+
+        // Log to notification center
+        if (typeof pushNotification === 'function') {
+            pushNotification(message, type);
+        }
     }
 
     getNotificationIcon(type) {
