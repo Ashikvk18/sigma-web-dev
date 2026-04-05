@@ -4,42 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JavaScript Quest - Learn JavaScript Through Gaming</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="game-styles.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
+    <!-- Animated Background -->
+    <div class="bg-particles" id="bg-particles"></div>
+    <canvas id="confetti-canvas"></canvas>
+
     <div id="app">
         <!-- Header -->
         <header class="header">
             <div class="header-content">
                 <div class="logo">
-                    <i class="fas fa-code"></i>
+                    <i class="fas fa-code logo-icon"></i>
                     <span>JavaScript Quest</span>
                 </div>
                 <nav class="nav">
-                    <button class="nav-btn" onclick="showDashboard()">
-                        <i class="fas fa-home"></i> Dashboard
+                    <button class="nav-btn active" data-view="dashboard" onclick="showDashboard()">
+                        <i class="fas fa-home"></i><span class="nav-label">Dashboard</span>
                     </button>
-                    <button class="nav-btn" onclick="showMap()">
-                        <i class="fas fa-map"></i> Learning Map
+                    <button class="nav-btn" data-view="learning-map" onclick="showMap()">
+                        <i class="fas fa-map"></i><span class="nav-label">Learning Map</span>
                     </button>
-                    <button class="nav-btn" onclick="showProfile()">
-                        <i class="fas fa-user"></i> Profile
+                    <button class="nav-btn" data-view="profile" onclick="showProfile()">
+                        <i class="fas fa-user"></i><span class="nav-label">Profile</span>
+                    </button>
+                    <button class="nav-btn nav-btn-icon" onclick="toggleSettings()" title="Settings">
+                        <i class="fas fa-cog"></i>
                     </button>
                 </nav>
                 <div class="player-stats">
-                    <div class="stat">
+                    <div class="stat streak-stat" id="streak-stat" title="Daily Streak">
+                        <i class="fas fa-fire"></i>
+                        <span id="player-streak">0</span>
+                    </div>
+                    <div class="stat" title="Level">
                         <i class="fas fa-star"></i>
                         <span id="player-level">Level 1</span>
                     </div>
-                    <div class="stat">
+                    <div class="stat" title="XP">
                         <i class="fas fa-bolt"></i>
                         <span id="player-xp">0 XP</span>
                     </div>
-                    <div class="stat">
+                    <div class="stat" title="Points">
                         <i class="fas fa-trophy"></i>
                         <span id="player-points">0 Points</span>
                     </div>
+                </div>
+            </div>
+            <!-- XP Progress Bar -->
+            <div class="xp-bar-wrapper">
+                <div class="xp-bar">
+                    <div class="xp-bar-fill" id="xp-bar-fill" style="width: 0%"></div>
+                    <span class="xp-bar-text" id="xp-bar-text">0 / 100 XP to Level 2</span>
                 </div>
             </div>
         </header>
@@ -49,8 +69,40 @@
             <!-- Dashboard View -->
             <section id="dashboard" class="view active">
                 <div class="dashboard-header">
-                    <h1>Welcome back, Coder! 🚀</h1>
-                    <p>Continue your JavaScript adventure</p>
+                    <h1 id="welcome-title">Welcome back, Coder! 🚀</h1>
+                    <p id="welcome-subtitle">Continue your JavaScript adventure</p>
+                </div>
+
+                <!-- Stats Ribbon -->
+                <div class="stats-ribbon">
+                    <div class="ribbon-stat">
+                        <div class="ribbon-icon"><i class="fas fa-fire"></i></div>
+                        <div class="ribbon-info">
+                            <span class="ribbon-value" id="ribbon-streak">0</span>
+                            <span class="ribbon-label">Day Streak</span>
+                        </div>
+                    </div>
+                    <div class="ribbon-stat">
+                        <div class="ribbon-icon"><i class="fas fa-book-open"></i></div>
+                        <div class="ribbon-info">
+                            <span class="ribbon-value" id="ribbon-lessons">0</span>
+                            <span class="ribbon-label">Lessons Done</span>
+                        </div>
+                    </div>
+                    <div class="ribbon-stat">
+                        <div class="ribbon-icon"><i class="fas fa-clock"></i></div>
+                        <div class="ribbon-info">
+                            <span class="ribbon-value" id="ribbon-time">0m</span>
+                            <span class="ribbon-label">Time Learned</span>
+                        </div>
+                    </div>
+                    <div class="ribbon-stat">
+                        <div class="ribbon-icon"><i class="fas fa-percentage"></i></div>
+                        <div class="ribbon-info">
+                            <span class="ribbon-value" id="ribbon-progress">0%</span>
+                            <span class="ribbon-label">Completion</span>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="dashboard-grid">
@@ -153,6 +205,10 @@
                 <div class="map-header">
                     <h1>JavaScript Learning Map 🗺️</h1>
                     <p>Choose your path through JavaScript mastery</p>
+                    <div class="map-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="lesson-search" placeholder="Search lessons..." oninput="filterLessons(this.value)">
+                    </div>
                 </div>
                 
                 <div class="learning-map-grid">
@@ -269,12 +325,22 @@
             <!-- Profile View -->
             <section id="profile" class="view">
                 <div class="profile-header">
-                    <div class="avatar">
-                        <i class="fas fa-user-circle"></i>
+                    <div class="avatar-ring">
+                        <svg class="progress-ring" width="120" height="120">
+                            <circle class="progress-ring-bg" cx="60" cy="60" r="52" />
+                            <circle class="progress-ring-fill" id="profile-ring" cx="60" cy="60" r="52" />
+                        </svg>
+                        <div class="avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
                     </div>
                     <div class="player-info">
                         <h2>JavaScript Coder</h2>
                         <p>Level 1 • 450 XP • 100 Points</p>
+                        <div class="player-badges">
+                            <span class="badge badge-level" id="level-badge"><i class="fas fa-star"></i> Beginner Coder</span>
+                            <span class="badge badge-streak" id="streak-badge"><i class="fas fa-fire"></i> 0 Day Streak</span>
+                        </div>
                     </div>
                 </div>
                 
@@ -406,6 +472,79 @@
                     <div class="rewards">
                         <span><i class="fas fa-bolt"></i> +100 XP Bonus</span>
                         <span><i class="fas fa-gift"></i> New Unlock</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- All Achievements Modal -->
+    <div id="all-achievements-modal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2><i class="fas fa-medal"></i> All Achievements</h2>
+                <button class="close-btn" onclick="closeModal('all-achievements-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="all-achievements-grid" id="all-achievements-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-cog"></i> Settings</h2>
+                <button class="close-btn" onclick="closeModal('settings-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-list">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Sound Effects</span>
+                            <span class="setting-desc">Play sounds on actions</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="setting-sound" checked onchange="toggleSetting('sound')">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Animations</span>
+                            <span class="setting-desc">Enable UI animations</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="setting-animations" checked onchange="toggleSetting('animations')">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Particles Background</span>
+                            <span class="setting-desc">Floating particles effect</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="setting-particles" checked onchange="toggleSetting('particles')">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Player Name</span>
+                            <span class="setting-desc">Your display name</span>
+                        </div>
+                        <input type="text" class="setting-input" id="setting-name" value="JavaScript Coder" onchange="updatePlayerName(this.value)">
+                    </div>
+                    <div class="setting-actions">
+                        <button class="btn-danger" onclick="resetAllProgress()">
+                            <i class="fas fa-trash"></i> Reset All Progress
+                        </button>
                     </div>
                 </div>
             </div>

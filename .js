@@ -20,3 +20,7 @@ do{
     console.log(x);
     x++;
 } while(x < 10);
+function myFunction() {
+    console.log("Hello");
+}
+myFunction();
