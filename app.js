@@ -1276,10 +1276,34 @@ function importProgress(event) {
 }
 
 // ========================================
+// THEME TOGGLE
+// ========================================
+
+function toggleTheme() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const newTheme = isLight ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('jsquest-theme', newTheme);
+
+    const toggle = document.getElementById('setting-theme');
+    if (toggle) toggle.checked = newTheme === 'light';
+}
+
+function loadSavedTheme() {
+    const saved = localStorage.getItem('jsquest-theme');
+    if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+        const toggle = document.getElementById('setting-theme');
+        if (toggle) toggle.checked = saved === 'light';
+    }
+}
+
+// ========================================
 // INIT: Check daily login on load
 // ========================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    loadSavedTheme();
     setTimeout(() => checkDailyLogin(), 1500);
 });
 
