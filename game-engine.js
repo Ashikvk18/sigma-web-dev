@@ -127,6 +127,11 @@ class GameEngine {
         const oldLevel = GameUtils.calculateLevel(GameData.player.xp);
         GameData.player.xp += amount;
         GameData.player.totalXp += amount;
+
+        // Track weekly XP
+        if (typeof trackWeeklyXP === 'function' && amount > 0) {
+            trackWeeklyXP(amount);
+        }
         
         const newLevel = GameUtils.calculateLevel(GameData.player.xp);
         

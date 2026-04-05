@@ -1276,6 +1276,80 @@ function importProgress(event) {
 }
 
 // ========================================
+// WEEKLY XP GOAL
+// ========================================
+
+function initWeeklyGoal() {
+    const now = new Date();
+    const weekStart = GameData.player.weekStartDate ? new Date(GameData.player.weekStartDate) : null;
+
+    // Reset if no start date or if it's been 7+ days
+    if (!weekStart || (now - weekStart) >= 7 * 24 * 60 * 60 * 1000) {
+        GameData.player.weeklyXp = 0;
+        GameData.player.weekStartDate = now.toISOString();
+        GameUtils.saveGameState();
+    }
+
+    // Sync dropdown
+    const sel = document.getElementById('weekly-goal-select');
+    if (sel) sel.value = GameData.player.weeklyGoal;
+
+    updateWeeklyGoalUI();
+}
+
+function setWeeklyGoal(value) {
+    GameData.player.weeklyGoal = parseInt(value);
+    GameUtils.saveGameState();
+    updateWeeklyGoalUI();
+}
+
+function trackWeeklyXP(amount) {
+    GameData.player.weeklyXp += amount;
+
+    if (GameData.player.weeklyXp >= GameData.player.weeklyGoal && (GameData.player.weeklyXp - amount) < GameData.player.weeklyGoal) {
+        // Just hit the goal
+        GameData.player.coins += 50;
+        GameData.player.gems += 2;
+        if (window.gameEngine) {
+            window.gameEngine.showNotification('🎯 Weekly XP goal reached! +50 coins +2 gems', 'success');
+            window.gameEngine.updatePlayerStats();
+        }
+        if (window.app) app.launchConfetti();
+    }
+
+    GameUtils.saveGameState();
+    updateWeeklyGoalUI();
+}
+
+function updateWeeklyGoalUI() {
+    const p = GameData.player;
+    const pct = Math.min(100, Math.round((p.weeklyXp / p.weeklyGoal) * 100));
+
+    const ring = document.getElementById('weekly-ring-fill');
+    if (ring) {
+        const circumference = 263.9;
+        ring.style.strokeDashoffset = circumference - (circumference * pct / 100);
+    }
+
+    const label = document.getElementById('weekly-ring-label');
+    if (label) label.textContent = `${pct}%`;
+
+    const current = document.getElementById('weekly-xp-current');
+    if (current) current.textContent = p.weeklyXp;
+
+    const goal = document.getElementById('weekly-xp-goal');
+    if (goal) goal.textContent = p.weeklyGoal;
+
+    // Days left
+    const daysLeft = document.getElementById('weekly-days-left');
+    if (daysLeft && p.weekStartDate) {
+        const elapsed = Date.now() - new Date(p.weekStartDate).getTime();
+        const remaining = Math.max(0, 7 - Math.floor(elapsed / (24 * 60 * 60 * 1000)));
+        daysLeft.textContent = `${remaining} day${remaining !== 1 ? 's' : ''} left`;
+    }
+}
+
+// ========================================
 // THEME TOGGLE
 // ========================================
 
@@ -1304,6 +1378,7 @@ function loadSavedTheme() {
 
 document.addEventListener('DOMContentLoaded', () => {
     loadSavedTheme();
+    initWeeklyGoal();
     setTimeout(() => checkDailyLogin(), 1500);
 });
 

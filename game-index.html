@@ -121,6 +121,32 @@
                 </div>
                 
                 <div class="dashboard-grid">
+                    <!-- Weekly XP Goal -->
+                    <div class="card weekly-goal-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-bullseye"></i> Weekly XP Goal</h3>
+                            <select class="weekly-goal-select" id="weekly-goal-select" onchange="setWeeklyGoal(this.value)">
+                                <option value="100">100 XP</option>
+                                <option value="200" selected>200 XP</option>
+                                <option value="500">500 XP</option>
+                                <option value="1000">1000 XP</option>
+                            </select>
+                        </div>
+                        <div class="card-content">
+                            <div class="weekly-ring-wrap">
+                                <svg class="weekly-ring" width="100" height="100">
+                                    <circle class="weekly-ring-bg" cx="50" cy="50" r="42" />
+                                    <circle class="weekly-ring-fill" id="weekly-ring-fill" cx="50" cy="50" r="42" />
+                                </svg>
+                                <div class="weekly-ring-label" id="weekly-ring-label">0%</div>
+                            </div>
+                            <div class="weekly-stats">
+                                <span><strong id="weekly-xp-current">0</strong> / <span id="weekly-xp-goal">200</span> XP</span>
+                                <span class="weekly-days-left" id="weekly-days-left">7 days left</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Current Quest -->
                     <div class="card current-quest">
                         <div class="card-header">
