@@ -2016,6 +2016,109 @@ body *, body *::before, body *::after {
     border-radius: 8px;
 }
 
+/* Lesson Content Styles */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.85rem;
+}
+.data-table th, .data-table td {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-color);
+    text-align: left;
+}
+.data-table th {
+    background: rgba(228, 0, 43, 0.08);
+    font-weight: 700;
+    color: var(--primary-color);
+}
+.data-table td code {
+    background: rgba(0,0,0,0.2);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+.key-concept {
+    background: rgba(212, 175, 55, 0.08);
+    border-left: 3px solid #d4af37;
+    padding: 0.75rem 1rem;
+    margin: 1rem 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.85rem;
+}
+.challenge-task {
+    background: rgba(228, 0, 43, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.85rem;
+}
+.syntax-block {
+    background: var(--dark-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    margin: 0.75rem 0;
+    color: var(--primary-color);
+}
+.topic-content .content-area ul {
+    padding-left: 1.5rem;
+    margin: 0.5rem 0;
+}
+.topic-content .content-area ul li {
+    margin-bottom: 0.3rem;
+    font-size: 0.85rem;
+}
+.quiz-section {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+.quiz-section h4 {
+    color: var(--primary-color);
+    margin-bottom: 0.75rem;
+}
+.quiz-question {
+    background: var(--dark-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+}
+.quiz-question p { margin-bottom: 0.5rem; font-size: 0.85rem; }
+.quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+.quiz-option {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--card-bg);
+    cursor: pointer;
+    font-size: 0.8rem;
+    text-align: left;
+    transition: all 0.15s;
+}
+.quiz-option:hover:not(:disabled) {
+    border-color: var(--primary-color);
+    background: rgba(228, 0, 43, 0.05);
+}
+.quiz-explanation {
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(16, 185, 129, 0.08);
+    border-left: 3px solid var(--success-color);
+    border-radius: 0 6px 6px 0;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
 /* Challenge tasks */
 .challenge-tasks {
     display: flex;

@@ -24,7 +24,7 @@ const GameData = {
         problemsSolved: 0,
         achievements: [],
         currentLesson: null,
-        unlockedLessons: ['variables', 'operators'],
+        unlockedLessons: ['variables', 'operators', 'functions', 'conditionals', 'loops', 'arrays', 'dom', 'events', 'async', 'error', 'patterns', 'modules', 'apis', 'performance', 'testing', 'frameworks', 'nodejs', 'typescript', 'projects', 'mastery'],
         completedLessons: ['variables', 'operators'],
         loginDays: [],
         lastLoginDate: null,
@@ -787,7 +787,7 @@ const GameUtils = {
 
     // Check if lesson is unlocked
     isLessonUnlocked(lessonId) {
-        return GameData.player.unlockedLessons.includes(lessonId);
+        return true;
     },
 
     // Check if lesson is completed
