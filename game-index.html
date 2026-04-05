@@ -248,6 +248,22 @@
                         </div>
                     </div>
 
+                    <!-- Code Fix -->
+                    <div class="card codefix-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-wrench"></i> Code Fix</h3>
+                        </div>
+                        <div class="card-content">
+                            <p>Fix the buggy line by typing the correct code!</p>
+                            <div class="typing-stats-mini">
+                                <span><i class="fas fa-tools"></i> Fixes: <strong id="fixes-count">0</strong></span>
+                            </div>
+                            <button class="btn-primary" onclick="openCodeFix()">
+                                Fix Code <i class="fas fa-wrench"></i>
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Leaderboard -->
                     <div class="card leaderboard">
                         <div class="card-header">
@@ -640,6 +656,29 @@
                             <i class="fas fa-trash"></i> Reset All Progress
                         </button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Code Fix Modal -->
+    <div id="codefix-modal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2><i class="fas fa-wrench"></i> Code Fix</h2>
+                <button class="close-btn" onclick="closeModal('codefix-modal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <p class="bug-title" id="codefix-title"></p>
+                <div class="codefix-code" id="codefix-code"></div>
+                <div class="codefix-input-area">
+                    <label class="codefix-label">Type the fixed line:</label>
+                    <input type="text" class="codefix-input" id="codefix-input" autocomplete="off" spellcheck="false" />
+                    <button class="btn-primary" onclick="submitCodeFix()"><i class="fas fa-check"></i> Submit Fix</button>
+                </div>
+                <div class="codefix-feedback" id="codefix-feedback" style="display:none;"></div>
+                <div class="bug-actions">
+                    <button class="btn-secondary" onclick="loadNewCodeFix()"><i class="fas fa-redo"></i> Next Challenge</button>
                 </div>
             </div>
         </div>

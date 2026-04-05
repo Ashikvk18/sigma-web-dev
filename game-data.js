@@ -603,6 +603,52 @@ const GameData = {
         }
     ],
 
+    // Code Fix challenges — type the corrected line
+    codeFixChallenges: [
+        {
+            id: 'fix1', title: 'Missing Semicolon',
+            code: 'let x = 5\nconsole.log(x)',
+            bugLineIndex: 0, bugLine: 'let x = 5',
+            fixedLine: 'let x = 5;',
+            explanation: 'Always end statements with a semicolon for clarity.'
+        },
+        {
+            id: 'fix2', title: 'Wrong Comparison',
+            code: 'if (age == "18") {\n  console.log("adult");\n}',
+            bugLineIndex: 0, bugLine: 'if (age == "18") {',
+            fixedLine: 'if (age === "18") {',
+            explanation: 'Use === for strict equality to avoid type coercion bugs.'
+        },
+        {
+            id: 'fix3', title: 'Forgot Return',
+            code: 'function add(a, b) {\n  a + b;\n}',
+            bugLineIndex: 1, bugLine: '  a + b;',
+            fixedLine: '  return a + b;',
+            explanation: 'Without return, the function returns undefined.'
+        },
+        {
+            id: 'fix4', title: 'Var in Loop',
+            code: 'for (var i = 0; i < 5; i++) {\n  setTimeout(() => console.log(i), 100);\n}',
+            bugLineIndex: 0, bugLine: 'for (var i = 0; i < 5; i++) {',
+            fixedLine: 'for (let i = 0; i < 5; i++) {',
+            explanation: 'Use let instead of var to get block-scoped loop variable.'
+        },
+        {
+            id: 'fix5', title: 'Missing Await',
+            code: 'async function load() {\n  const data = fetch("/api");\n  return data;\n}',
+            bugLineIndex: 1, bugLine: '  const data = fetch("/api");',
+            fixedLine: '  const data = await fetch("/api");',
+            explanation: 'fetch() returns a Promise — use await to get the actual response.'
+        },
+        {
+            id: 'fix6', title: 'Array Copy',
+            code: 'const original = [1, 2, 3];\nconst copy = original;\ncopy.push(4);',
+            bugLineIndex: 1, bugLine: 'const copy = original;',
+            fixedLine: 'const copy = [...original];',
+            explanation: 'Use spread operator to create a shallow copy instead of a reference.'
+        }
+    ],
+
     // Leaderboard (mock data)
     leaderboard: [
         { rank: 1, name: 'CodeMaster', xp: 2450, avatar: 'fas fa-user-ninja' },

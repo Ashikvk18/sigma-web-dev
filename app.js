@@ -1067,6 +1067,83 @@ function pickBugLine(lineIndex) {
 }
 
 // ========================================
+// CODE FIX MINI-GAME
+// ========================================
+
+let currentCodeFix = null;
+let codeFixAnswered = false;
+let codeFixCount = 0;
+
+function openCodeFix() {
+    document.getElementById('codefix-modal').classList.add('active');
+    loadNewCodeFix();
+}
+
+function loadNewCodeFix() {
+    const challenges = GameData.codeFixChallenges;
+    currentCodeFix = challenges[Math.floor(Math.random() * challenges.length)];
+    codeFixAnswered = false;
+
+    document.getElementById('codefix-title').textContent = `🔧 Fix: ${currentCodeFix.title}`;
+    document.getElementById('codefix-feedback').style.display = 'none';
+    document.getElementById('codefix-input').value = '';
+    document.getElementById('codefix-input').disabled = false;
+
+    const codeArea = document.getElementById('codefix-code');
+    const lines = currentCodeFix.code.split('\n');
+    codeArea.innerHTML = lines.map((line, i) => {
+        const isBug = i === currentCodeFix.bugLineIndex;
+        return `<div class="codefix-line${isBug ? ' bug-highlight' : ''}">
+            <span class="line-num">${i + 1}</span>
+            <span class="line-code">${line}</span>
+        </div>`;
+    }).join('');
+
+    document.getElementById('codefix-input').focus();
+}
+
+function submitCodeFix() {
+    if (codeFixAnswered || !currentCodeFix) return;
+    codeFixAnswered = true;
+
+    const input = document.getElementById('codefix-input');
+    const userAnswer = input.value.trim();
+    const expected = currentCodeFix.fixedLine.trim();
+    const feedback = document.getElementById('codefix-feedback');
+    feedback.style.display = 'block';
+    input.disabled = true;
+
+    // Normalize whitespace for comparison
+    const normalize = s => s.replace(/\s+/g, ' ').trim();
+
+    if (normalize(userAnswer) === normalize(expected)) {
+        feedback.className = 'codefix-feedback correct';
+        feedback.innerHTML = `<strong>✅ Perfect fix!</strong> ${currentCodeFix.explanation}`;
+        codeFixCount++;
+        document.getElementById('fixes-count').textContent = codeFixCount;
+
+        GameData.player.coins += 15;
+        if (window.gameEngine) {
+            window.gameEngine.addXP(20);
+            window.gameEngine.updatePlayerStats();
+        }
+        GameUtils.saveGameState();
+        app.playSound('success');
+    } else {
+        feedback.className = 'codefix-feedback wrong';
+        feedback.innerHTML = `<strong>❌ Not quite.</strong> Expected:<br><code>${expected}</code><br><br>${currentCodeFix.explanation}`;
+        app.playSound('error');
+    }
+}
+
+// Allow Enter key to submit
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && document.activeElement?.id === 'codefix-input') {
+        submitCodeFix();
+    }
+});
+
+// ========================================
 // NOTIFICATION CENTER
 // ========================================
 

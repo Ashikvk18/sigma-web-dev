@@ -2556,6 +2556,91 @@ body {
 .fc-unsure-btn:hover { transform: scale(1.05); }
 
 /* ========================================
+   CODE FIX
+   ======================================== */
+.codefix-code {
+    background: var(--dark-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 0.5rem 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+}
+.codefix-line {
+    padding: 0.3rem 1rem;
+    display: flex;
+    gap: 1rem;
+    border-left: 3px solid transparent;
+}
+.codefix-line .line-num {
+    color: var(--text-secondary);
+    min-width: 20px;
+    text-align: right;
+    font-size: 0.8rem;
+    user-select: none;
+}
+.codefix-line .line-code {
+    white-space: pre;
+    color: var(--text-primary);
+}
+.codefix-line.bug-highlight {
+    background: rgba(228, 0, 43, 0.1);
+    border-left-color: var(--primary-color);
+}
+.codefix-line.bug-highlight .line-code {
+    color: var(--primary-color);
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+.codefix-input-area {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+.codefix-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+.codefix-input {
+    width: 100%;
+    background: var(--dark-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.7rem 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    transition: border-color 0.2s;
+}
+.codefix-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 12px rgba(228, 0, 43, 0.15);
+}
+.codefix-feedback {
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+.codefix-feedback.correct {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid var(--success-color);
+    color: var(--success-color);
+}
+.codefix-feedback.wrong {
+    background: rgba(228, 0, 43, 0.08);
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+/* ========================================
    NOTIFICATION CENTER
    ======================================== */
 .notif-bell {
